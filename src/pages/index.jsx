@@ -15,6 +15,7 @@ import logoAirbnb from '@/images/logos/airbnb.svg'
 import logoFacebook from '@/images/logos/facebook.svg'
 import logoPlanetaria from '@/images/logos/planetaria.svg'
 import logoStarbucks from '@/images/logos/starbucks.svg'
+import Projects from './projects'
 
 function BriefcaseIcon(props) {
   return (
@@ -60,38 +61,31 @@ function SocialLink({ icon: Icon, ...props }) {
   )
 }
 
-function Resume() {
+export function Resume() {
   let resume = [
     {
-      company: 'Planetaria',
-      title: 'CEO',
+      company: 'bureau',
+      title: 'frontend engineer',
       logo: logoPlanetaria,
-      start: '2019',
+      start: 'oct 2021',
       end: {
-        label: 'Present',
+        label: 'present',
         dateTime: new Date().getFullYear(),
       },
     },
     {
-      company: 'Airbnb',
-      title: 'Product Designer',
+      company: 'avhan technologies pvt ltd.',
+      title: 'ui developer',
       logo: logoAirbnb,
-      start: '2014',
-      end: '2019',
+      start: 'june 2020',
+      end: 'oct 2021',
     },
     {
-      company: 'Facebook',
-      title: 'iOS Software Engineer',
+      company: 'domain edutech pvt ltd.',
+      title: 'founding member - fullstack developer',
       logo: logoFacebook,
-      start: '2011',
-      end: '2014',
-    },
-    {
-      company: 'Starbucks',
-      title: 'Shift Supervisor',
-      logo: logoStarbucks,
-      start: '2008',
-      end: '2011',
+      start: 'nov 2017',
+      end: 'june 2020',
     },
   ]
 
@@ -99,7 +93,7 @@ function Resume() {
     <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
       <h2 className="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
         <BriefcaseIcon className="h-6 w-6 flex-none" />
-        <span className="ml-3">Work</span>
+        <span className="ml-3">work experience</span>
       </h2>
       <ol className="mt-6 space-y-4">
         {resume.map((role, roleIndex) => (
@@ -136,14 +130,14 @@ function Resume() {
         ))}
       </ol>
       <Button href="#" variant="secondary" className="group mt-6 w-full">
-        Download CV
+        download resume
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
       </Button>
     </div>
   )
 }
 
-function Photos() {
+export function Photos() {
   let rotations = ['rotate-2', '-rotate-2', 'rotate-2', 'rotate-2', '-rotate-2']
 
   return (
@@ -178,19 +172,16 @@ export default function Home() {
           Suyash Pradhan - Frontend Developer, Software Tinkerer and sports
           enthusiast
         </title>
-        <meta
-          name="description"
-          content="I’m Suyash, a software designer and entrepreneur based in New York City. I’m the founder and CEO of Planetaria, where we develop technologies that empower regular people to explore space on their own terms."
-        />
+        <meta name="description" content="I’m Suyash" />
       </Head>
       <Container className="mt-9">
         <div className="max-w-2xl">
           <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            Frontend developer, software tinkerer and sports enthusiast
+            frontend engineer, software tinkerer and sports enthusiast.
           </h1>
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
-            I’m Suyash, a frontend developer and entrepreneur based in New York
-            City.
+            I’m Suyash, a frontend developer and entrepreneur based in Bengaluru
+            City, India.
           </p>
           <div className="mt-6 flex gap-6">
             <SocialLink
@@ -211,15 +202,7 @@ export default function Home() {
           </div>
         </div>
       </Container>
-      <Photos />
-      {/* <Container className="mt-24 md:mt-28">
-        <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
-          <div className="flex flex-col gap-16"></div>
-          <div className="space-y-10 lg:pl-16 xl:pl-24">
-            <Resume />
-          </div>
-        </div>
-      </Container> */}
+      <Projects />
     </>
   )
 }
