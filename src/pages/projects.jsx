@@ -5,25 +5,31 @@ import { SimpleLayout } from '@/components/SimpleLayout'
 
 const projects = [
   {
-    name: 'Minimalism UI',
+    name: 'Minimal UI Component Library',
     description:
-      'Creating technology to empower civilians to explore space on their own terms.',
-    link: { href: 'http://planetaria.tech', label: 'planetaria.tech' },
-    logo: '',
+      'A CSS based component library for designing beautiful and responsive user interfaces.',
+    link: {
+      href: 'https://minimalism-ui.netlify.app/',
+      label: 'Visit',
+    },
   },
   {
-    name: 'YogaLife Ecommerce Store',
+    name: 'Ecommerce Store App',
     description:
-      'High performance web animation library, hand-written in optimized WASM.',
-    link: { href: '#', label: 'github.com' },
-    logo: '',
+      'An ecommerce store built using MERN Stack based on Yoga theme',
+    link: { href: 'https://yoga-store.netlify.app', label: 'Visit' },
   },
   {
-    name: 'YogaPlay Video Library',
+    name: 'Video Library App',
     description:
-      'A video streaming library, optimized for interstellar transmission.',
-    link: { href: '#', label: 'github.com' },
-    logo: '',
+      'A Video platform built using MERN stack for watching videos based on Yoga',
+    link: { href: 'https://yogaplay.netlify.app/', label: 'Visit' },
+  },
+  {
+    name: 'Social Media App',
+    description:
+      'A Social media platform built using MERN stack for connecting with like-minded folks',
+    link: { href: 'https://yoga-connect.netlify.app', label: 'Visit' },
   },
 ]
 
@@ -48,25 +54,26 @@ export default function Projects() {
           content="Things I’ve made trying to put my dent in the universe."
         />
       </Head>
-      <SimpleLayout title="my work">
+      <SimpleLayout title="My work">
         <ul
           role="list"
           className="mb-24 grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-2"
         >
           {projects.map((project) => (
             <Card as="li" key={project.name}>
-              <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+              <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
+                <Card.Link href={project.link.href}>{project.name}</Card.Link>
+              </h2>
+              <Card.Description>{project.description}</Card.Description>
+              {/* <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
                 <Image
                   src={project.logo}
                   alt={project.name}
                   className="h-8 w-8"
                   unoptimized
                 />
-              </div>
-              <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <Card.Link href={project.link.href}>{project.name}</Card.Link>
-              </h2>
-              <Card.Description>{project.description}</Card.Description>
+              </div> */}
+
               <p className="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
                 <LinkIcon className="h-6 w-6 flex-none" />
                 <span className="ml-2">{project.link.label}</span>
