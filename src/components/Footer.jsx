@@ -3,35 +3,17 @@ import Link from 'next/link'
 import { Container } from '@/components/Container'
 import { Code, Heart } from '@phosphor-icons/react'
 
-function NavLink({ href, children }) {
-  return (
-    <Link
-      href={href}
-      className="transition hover:text-teal-500 dark:hover:text-teal-400"
-    >
-      {children}
-    </Link>
-  )
-}
-
 export function Footer() {
   return (
-    <footer className="mt-32">
+    <footer className="mt-28">
       <Container.Outer>
-        <div className="border-t border-zinc-100 pb-16 pt-10 dark:border-zinc-700/40">
+        <div className="border-t border-zinc-100 pb-8 pt-10 dark:border-zinc-700/40">
           <Container.Inner>
-            <div className="flex flex-col items-center justify-between gap-6 sm:flex-row">
-              <div className="flex gap-6 text-sm font-medium text-zinc-800 dark:text-zinc-200">
-                <NavLink href="/about">about</NavLink>
-                <NavLink href="https://suyashpradhan.hashnode.dev">
-                  blog
-                </NavLink>
-                <NavLink href="/projects">projects</NavLink>
-              </div>
+            <div className="flex flex-col items-center justify-center sm:flex-row">
               <p className="text-center text-sm text-zinc-400 dark:text-zinc-500">
-                &copy; 2023 made with <Heart className="inline" /> &{' '}
-                <Code className="inline" /> <br />
-                by suyash.
+                &copy; 2023 made with <Heart className="inline " /> &{' '}
+                <Code className="inline" /> by Suyash Pradhan <br />
+                All rights reserved.
               </p>
             </div>
           </Container.Inner>

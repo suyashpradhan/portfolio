@@ -15,7 +15,12 @@ import logoAirbnb from '@/images/logos/airbnb.svg'
 import logoFacebook from '@/images/logos/facebook.svg'
 import logoPlanetaria from '@/images/logos/planetaria.svg'
 import Projects from './projects'
-import { GlobeHemisphereEast, Suitcase } from '@phosphor-icons/react'
+import {
+  GlobeHemisphereEast,
+  MapPin,
+  NavigationArrow,
+  Suitcase,
+} from '@phosphor-icons/react'
 
 function BriefcaseIcon(props) {
   return (
@@ -173,16 +178,16 @@ export default function Home() {
       </Head>
       <Container className="mt-10">
         <div className="max-w-3xl">
-          <h1 className="text-4xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
-            Frontend developer, ui designer <br />
-            and sports enthusiast.
+          <h1 className="text-xl font-bold tracking-tight text-zinc-800 dark:text-zinc-100 sm:text-5xl">
+            frontend developer and sports enthusiast.
           </h1>
+        </div>
+        <div className="max-w-2xl">
           <p className="mt-6 text-base text-zinc-600 dark:text-zinc-400">
             I’m Suyash Pradhan, a multi-disciplinary frontend developer,
-            passionately designing & <br />
-            building web-apps from concept to launch, for over 5 years.
+            passionately designing & building web-apps from concept to launch,
+            for over 5 years.
           </p>
-
           <p className="mb-2 mt-8 text-lg font-bold uppercase tracking-widest text-zinc-800 dark:text-zinc-100">
             Quick intro
           </p>
@@ -192,8 +197,7 @@ export default function Home() {
               <Suitcase className="inline" /> Frontend developer @ Bureau, Inc
             </li>
             <li className="my-1 text-base text-zinc-600 dark:text-zinc-400">
-              <GlobeHemisphereEast className="inline" /> Based out of Bengaluru,
-              India
+              <MapPin className="inline" /> Bengaluru, India
             </li>
           </ul>
           <div className="mt-8 flex gap-6">
@@ -215,7 +219,8 @@ export default function Home() {
           </div>
         </div>
       </Container>
-      <Projects />
+      {/* <Projects /> */}
+      <Photos />
     </>
   )
 }
