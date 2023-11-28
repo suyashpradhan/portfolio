@@ -66,7 +66,7 @@ export function Header() {
   return (
     <>
       <Container className="mt-10">
-        <div className="flex w-full items-center">
+        <div className="flex w-full items-center justify-between">
           <Avatar large className="block h-16 w-16 origin-left" />
           <Navigation className="pointer-events-auto " />
         </div>

@@ -1,7 +1,6 @@
-import Image from 'next/future/image'
 import Head from 'next/head'
 import { Card } from '@/components/Card'
-import { SimpleLayout } from '@/components/SimpleLayout'
+import { Container } from '@/components/Container'
 
 const projects = [
   {
@@ -12,24 +11,6 @@ const projects = [
       href: 'https://minimalism-ui.netlify.app/',
       label: 'Visit',
     },
-  },
-  {
-    name: 'Ecommerce Store App',
-    description:
-      'An ecommerce store built using MERN Stack based on Yoga theme',
-    link: { href: 'https://yoga-store.netlify.app', label: 'Visit' },
-  },
-  {
-    name: 'Video Library App',
-    description:
-      'A Video platform built using MERN stack for watching videos based on Yoga',
-    link: { href: 'https://yogaplay.netlify.app/', label: 'Visit' },
-  },
-  {
-    name: 'Social Media App',
-    description:
-      'A Social media platform built using MERN stack for connecting with like-minded folks',
-    link: { href: 'https://yoga-connect.netlify.app', label: 'Visit' },
   },
 ]
 
@@ -54,7 +35,20 @@ export default function Projects() {
           content="Things I’ve made trying to put my dent in the universe."
         />
       </Head>
-      <SimpleLayout title="My work">
+      <ProjectCard />
+    </>
+  )
+}
+
+export function ProjectCard() {
+  return (
+    <>
+      <Container className="mt-14">
+        <p className="mb-2 mt-8 text-lg font-bold tracking-widest text-zinc-800 dark:text-zinc-100">
+          my work
+        </p>{' '}
+      </Container>
+      <Container className="mt-10">
         <ul
           role="list"
           className="mb-24 grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-2"
@@ -65,15 +59,6 @@ export default function Projects() {
                 <Card.Link href={project.link.href}>{project.name}</Card.Link>
               </h2>
               <Card.Description>{project.description}</Card.Description>
-              {/* <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <Image
-                  src={project.logo}
-                  alt={project.name}
-                  className="h-8 w-8"
-                  unoptimized
-                />
-              </div> */}
-
               <p className="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
                 <LinkIcon className="h-6 w-6 flex-none" />
                 <span className="ml-2">{project.link.label}</span>
@@ -81,7 +66,7 @@ export default function Projects() {
             </Card>
           ))}
         </ul>
-      </SimpleLayout>
+      </Container>
     </>
   )
 }
