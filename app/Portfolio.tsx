@@ -5,6 +5,7 @@
 import {
   CSSProperties,
   MouseEvent as ReactMouseEvent,
+  PointerEvent as ReactPointerEvent,
   useCallback,
   useEffect,
   useRef,
@@ -14,7 +15,6 @@ import { projects } from "./projects";
 
 type Theme = "light" | "dark";
 type Tone = "tap" | "toggle" | "shift";
-type HeroProp = "coffee" | "books" | "trophy";
 
 // Add the real destinations here when they are ready. Empty values render as
 // honest, styled placeholders instead of dead or misleading links.
@@ -33,11 +33,11 @@ const toneConfig: Record<Tone, { frequency: number; duration: number; gain: numb
   shift: { frequency: 176, duration: 0.07, gain: 0.022 },
 };
 
-const heroPropCopy: Record<HeroProp, string> = {
-  coffee: "Focus mode brewed.",
-  books: "A reading trail unlocked.",
-  trophy: "Tiny studio light: on.",
-};
+const avatarMessages = [
+  "Psst — the clay objects are doors.",
+  "I build between product, design and engineering.",
+  "The laptop is the quickest way into my work.",
+] as const;
 
 const aboutModes = {
   prototype: {
@@ -221,14 +221,16 @@ export default function Portfolio() {
   const [theme, setTheme] = useState<Theme>("light");
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
-  const [heroReaction, setHeroReaction] = useState("Find the three tiny desk stories.");
-  const [discoveredProps, setDiscoveredProps] = useState<HeroProp[]>([]);
+  const [avatarMessage, setAvatarMessage] = useState(0);
   const [aboutMode, setAboutMode] = useState<AboutMode>("prototype");
   const [activeSkill, setActiveSkill] = useState<SkillGroup>("engineering");
   const [activeContribution, setActiveContribution] = useState<ContributionMode>("useful");
   const [activeBook, setActiveBook] = useState(0);
   const [activeTraining, setActiveTraining] = useState<TrainingMode>("tennis");
+  const pageRef = useRef<HTMLElement>(null);
   const projectsRef = useRef<HTMLElement>(null);
+  const projectStageRef = useRef<HTMLDivElement>(null);
+  const projectDragRef = useRef({ active: false, startX: 0, currentX: 0 });
   const audioRef = useRef<AudioContext | null>(null);
   const soundRef = useRef(false);
   const activeProjectRef = useRef(0);
@@ -242,7 +244,6 @@ export default function Portfolio() {
     clientY: number;
   } | null>(null);
 
-  const missionComplete = discoveredProps.length === 3;
   const currentAbout = aboutModes[aboutMode];
   const currentSkill = skillGroups[activeSkill];
   const currentContribution = contributionModes[activeContribution];
@@ -338,6 +339,106 @@ export default function Portfolio() {
       window.removeEventListener("pointerdown", pressCursor);
       window.removeEventListener("pointerup", releaseCursor);
       document.documentElement.removeEventListener("mouseleave", hideCursor);
+    };
+  }, []);
+
+  useEffect(() => {
+    const page = pageRef.current;
+    if (!page || window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    let disposed = false;
+    let revert = () => {};
+
+    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
+      ([{ gsap }, { ScrollTrigger }]) => {
+        if (disposed) return;
+        gsap.registerPlugin(ScrollTrigger);
+
+        const context = gsap.context(() => {
+          const intro = gsap.timeline({ defaults: { ease: "back.out(1.18)" } });
+          intro
+            .from(".hero-title-word", {
+              yPercent: 36,
+              rotate: (index) => (index === 0 ? -3 : 3),
+              opacity: 0,
+              duration: 1.05,
+              stagger: 0.1,
+              clearProps: "transform,opacity",
+            })
+            .from(
+              ".hero-avatar-button",
+              { y: 70, scale: 0.82, opacity: 0, duration: 0.95, clearProps: "transform,opacity" },
+              "-=0.72",
+            )
+            .from(
+              ".hero-object",
+              {
+                scale: 0.68,
+                rotate: (index) => [-8, 7, -6][index] ?? 0,
+                opacity: 0,
+                duration: 0.72,
+                stagger: 0.1,
+                clearProps: "transform,opacity",
+              },
+              "-=0.56",
+            )
+            .from(
+              ".hero-manifesto, .hero-scroll-cue",
+              { y: 18, opacity: 0, duration: 0.55, stagger: 0.08, clearProps: "transform,opacity" },
+              "-=0.38",
+            );
+
+          const media = gsap.matchMedia();
+          media.add("(min-width: 821px)", () => {
+            gsap.to(".hero-title-layer", {
+              yPercent: -11,
+              scale: 0.965,
+              ease: "none",
+              scrollTrigger: { trigger: ".hero-world", start: "top top", end: "bottom top", scrub: 0.65 },
+            });
+            gsap.to(".hero-avatar-wrap", {
+              yPercent: 9,
+              scale: 0.95,
+              ease: "none",
+              scrollTrigger: { trigger: ".hero-world", start: "top top", end: "bottom top", scrub: 0.65 },
+            });
+            gsap.to(".hero-object-books", {
+              y: -34,
+              rotate: 4,
+              ease: "none",
+              scrollTrigger: { trigger: ".hero-world", start: "top top", end: "bottom top", scrub: 0.7 },
+            });
+            gsap.to(".hero-object-shoe", {
+              y: -18,
+              x: 22,
+              rotate: -3,
+              ease: "none",
+              scrollTrigger: { trigger: ".hero-world", start: "top top", end: "bottom top", scrub: 0.7 },
+            });
+            gsap.from(".project-theatre", {
+              scale: 0.965,
+              borderRadius: "72px 72px 0 0",
+              ease: "none",
+              scrollTrigger: {
+                trigger: ".project-playground",
+                start: "top bottom",
+                end: "top top",
+                scrub: 0.7,
+              },
+            });
+          });
+
+          revert = () => {
+            media.revert();
+            context.revert();
+          };
+        }, page);
+      },
+    );
+
+    return () => {
+      disposed = true;
+      revert();
     };
   }, []);
 
@@ -481,25 +582,18 @@ export default function Portfolio() {
       const bounds = pointer.target.getBoundingClientRect();
       const x = (pointer.clientX - bounds.left) / bounds.width - 0.5;
       const y = (pointer.clientY - bounds.top) / bounds.height - 0.5;
-      const depth = Math.min(1, Math.hypot(x, y) * 1.4);
-
-      pointer.target.style.setProperty("--hero-x", `${x * 7}px`);
-      pointer.target.style.setProperty("--hero-y", `${y * 6}px`);
-      pointer.target.style.setProperty("--image-x", `${x * -1.3}px`);
-      pointer.target.style.setProperty("--image-y", `${y * -1}px`);
-      pointer.target.style.setProperty("--hero-rx", `${y * -0.9}deg`);
-      pointer.target.style.setProperty("--hero-ry", `${x * 1.3}deg`);
-      pointer.target.style.setProperty("--hero-depth", depth.toFixed(3));
+      pointer.target.style.setProperty("--world-x", `${x * 8}px`);
+      pointer.target.style.setProperty("--world-y", `${y * 7}px`);
       pointer.target.style.setProperty("--light-x", `${(x + 0.5) * 100}%`);
       pointer.target.style.setProperty("--light-y", `${(y + 0.5) * 100}%`);
 
-      pointer.target.querySelectorAll<HTMLElement>(".hero-hotspot").forEach((hotspot) => {
-        const hotspotBounds = hotspot.getBoundingClientRect();
+      pointer.target.querySelectorAll<HTMLElement>(".hero-object").forEach((object) => {
+        const hotspotBounds = object.getBoundingClientRect();
         const distance = Math.hypot(
           pointer.clientX - (hotspotBounds.left + hotspotBounds.width / 2),
           pointer.clientY - (hotspotBounds.top + hotspotBounds.height / 2),
         );
-        hotspot.style.setProperty("--near", Math.max(0, 1 - distance / 125).toFixed(3));
+        object.style.setProperty("--near", Math.max(0, 1 - distance / 180).toFixed(3));
       });
     });
   };
@@ -508,53 +602,59 @@ export default function Portfolio() {
     cancelAnimationFrame(heroFrameRef.current);
     heroFrameRef.current = 0;
     heroPointerRef.current = null;
-    ["--hero-x", "--hero-y", "--image-x", "--image-y"].forEach((property) =>
+    ["--world-x", "--world-y"].forEach((property) =>
       event.currentTarget.style.setProperty(property, "0px"),
     );
-    ["--hero-rx", "--hero-ry"].forEach((property) =>
-      event.currentTarget.style.setProperty(property, "0deg"),
-    );
-    event.currentTarget.style.setProperty("--hero-depth", "0");
     event.currentTarget.style.setProperty("--light-x", "50%");
     event.currentTarget.style.setProperty("--light-y", "40%");
-    event.currentTarget.querySelectorAll<HTMLElement>(".hero-hotspot").forEach((hotspot) =>
-      hotspot.style.setProperty("--near", "0"),
+    event.currentTarget.querySelectorAll<HTMLElement>(".hero-object").forEach((object) =>
+      object.style.setProperty("--near", "0"),
     );
   };
 
-  const reactToProp = (event: ReactMouseEvent<HTMLButtonElement>, prop: HeroProp) => {
-    const alreadyFound = discoveredProps.includes(prop);
-    const nextProps = alreadyFound ? discoveredProps : [...discoveredProps, prop];
-    setDiscoveredProps(nextProps);
-    setHeroReaction(
-      nextProps.length === 3
-        ? "Desk mission complete. The studio approves."
-        : `${heroPropCopy[prop]} ${nextProps.length}/3 found.`,
-    );
-    playTone(nextProps.length === 3 && !alreadyFound ? "toggle" : "tap");
-
-    const stage = event.currentTarget.closest<HTMLElement>(".hero-clay-stage");
-    if (stage && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
-      const className = `is-${prop}-active`;
-      stage.classList.remove(className);
-      void stage.offsetWidth;
-      stage.classList.add(className);
-      window.setTimeout(() => stage.classList.remove(className), 900);
+  const reactToAvatar = (event: ReactMouseEvent<HTMLButtonElement>) => {
+    setAvatarMessage((current) => (current + 1) % avatarMessages.length);
+    playTone("tap");
+    if (!window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
       event.currentTarget.animate(
         [
-          { transform: "scale(1) rotate(0deg)" },
-          { transform: "scale(0.86, 0.8) rotate(-2deg)", offset: 0.18 },
-          { transform: "scale(1.08, 0.95) rotate(3deg)", offset: 0.5 },
-          { transform: "scale(0.98, 1.03) rotate(-1deg)", offset: 0.76 },
-          { transform: "scale(1) rotate(0deg)" },
+          { transform: "scale(1, 1) rotate(0deg)" },
+          { transform: "scale(0.94, 0.9) rotate(-1deg)", offset: 0.2 },
+          { transform: "scale(1.025, 1.04) rotate(1deg)", offset: 0.56 },
+          { transform: "scale(1, 1) rotate(0deg)" },
         ],
         { duration: 520, easing: "cubic-bezier(0.2, 0.82, 0.24, 1.08)" },
       );
     }
   };
 
+  const startProjectDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (event.pointerType === "mouse" && event.button !== 0) return;
+    projectDragRef.current = { active: true, startX: event.clientX, currentX: event.clientX };
+    event.currentTarget.setPointerCapture(event.pointerId);
+    event.currentTarget.classList.add("is-dragging");
+  };
+
+  const moveProjectDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!projectDragRef.current.active) return;
+    projectDragRef.current.currentX = event.clientX;
+    const delta = Math.max(-88, Math.min(88, event.clientX - projectDragRef.current.startX));
+    event.currentTarget.style.setProperty("--drag-x", `${delta}px`);
+  };
+
+  const endProjectDrag = (event: ReactPointerEvent<HTMLDivElement>) => {
+    if (!projectDragRef.current.active) return;
+    const delta = projectDragRef.current.currentX - projectDragRef.current.startX;
+    projectDragRef.current.active = false;
+    event.currentTarget.classList.remove("is-dragging");
+    event.currentTarget.style.setProperty("--drag-x", "0px");
+    if (Math.abs(delta) < 46) return;
+    const next = delta < 0 ? activeProject + 1 : activeProject - 1;
+    scrollToProject(Math.max(0, Math.min(projects.length - 1, next)));
+  };
+
   return (
-    <main id="top">
+    <main id="top" ref={pageRef}>
       <span className="clay-cursor" ref={cursorRef} aria-hidden="true" />
       <a className="skip-link" href="#projects">Skip to projects</a>
 
@@ -599,71 +699,88 @@ export default function Portfolio() {
         </div>
       </header>
 
-      <section className="hero section-shell" aria-labelledby="hero-title">
-        <div className="hero-copy">
-          <p className="hand-note hero-note">Hey! I’m</p>
-          <h1 id="hero-title">Suyash<br />Pradhan<span>.</span></h1>
-          <p className="hero-statement">I turn messy product problems into useful, delightful software.</p>
-          <p className="hero-role">Product engineer building thoughtful web, mobile and AI-native products.</p>
-          <div className="hero-actions">
-            <a className="clay-button primary" href="#projects" onPointerDown={() => playTone("tap")}>
-              Explore my work <span className="hand-arrow arrow-down" aria-hidden="true">↓</span>
-            </a>
-            <span className="tiny-copy">Made with code, curiosity and imaginary clay.</span>
-          </div>
+      <section
+        className="hero hero-world"
+        aria-labelledby="hero-title"
+        onMouseMove={moveHero}
+        onMouseLeave={resetHero}
+      >
+        <div className="hero-atmosphere" aria-hidden="true">
+          <i className="atmosphere-orb orb-one" />
+          <i className="atmosphere-orb orb-two" />
+          <i className="atmosphere-squiggle">~</i>
         </div>
 
-        <figure
-          className={`hero-clay-stage ${missionComplete ? "is-mission-complete" : ""}`}
-          onMouseMove={moveHero}
-          onMouseLeave={resetHero}
-          aria-label="An interactive clay workspace with a three-object mission"
-        >
-          <div className="hero-light" aria-hidden="true" />
-          <picture>
-            <source media="(max-width: 640px)" srcSet="/clay/1-720.webp 720w, /clay/1.webp 1122w" />
-            <img
-              className="hero-image"
-              src="/clay/2.webp"
-              srcSet="/clay/2-720.webp 720w, /clay/2.webp 1448w"
-              sizes="(max-width: 640px) 82vw, (max-width: 1100px) 54vw, 48vw"
-              alt="A clay version of Suyash working at a wooden desk with a laptop, books and a coffee mug"
-              width="1448"
-              height="1086"
-              loading="eager"
-              fetchPriority="high"
-            />
-          </picture>
-          {(["coffee", "books", "trophy"] as HeroProp[]).map((prop) => (
-            <button
-              className={`hero-hotspot hotspot-${prop} ${discoveredProps.includes(prop) ? "is-found" : ""}`}
-              type="button"
-              key={prop}
-              onClick={(event) => reactToProp(event, prop)}
-              aria-label={`Activate the clay ${prop}`}
-              aria-pressed={discoveredProps.includes(prop)}
-            >
-              <span>{prop}</span>
-            </button>
-          ))}
-          <div className="mobile-desk-actions" aria-label="Desk mission controls">
-            {(["coffee", "books", "trophy"] as HeroProp[]).map((prop) => (
-              <button
-                type="button"
-                key={prop}
-                className={discoveredProps.includes(prop) ? "is-found" : ""}
-                onClick={(event) => reactToProp(event, prop)}
-                aria-pressed={discoveredProps.includes(prop)}
-              >
-                {prop}
-              </button>
-            ))}
-          </div>
-          <figcaption className="hero-reaction" aria-live="polite">
-            <span>{heroReaction}</span>
-            <b>{discoveredProps.length}/3</b>
-          </figcaption>
-        </figure>
+        <div className="hero-title-layer">
+          <p className="hero-kicker">Product engineer · interaction-minded builder</p>
+          <h1 id="hero-title" aria-label="Suyash Pradhan">
+            <span className="hero-title-word word-suyash">Suyash</span>
+            <span className="hero-title-word word-pradhan">Pradhan<span>.</span></span>
+          </h1>
+        </div>
+
+        <div className="hero-avatar-wrap">
+          <span className="hero-avatar-shadow" aria-hidden="true" />
+          <button
+            className="hero-avatar-button"
+            type="button"
+            onClick={reactToAvatar}
+            aria-label="Ask clay Suyash for another thought"
+          >
+            <picture>
+              <source media="(max-width: 640px)" srcSet="/clay/hero-avatar-v2-520.webp" />
+              <img
+                src="/clay/hero-avatar-v2.webp"
+                alt="A full-body clay character of Suyash, standing with his hands in his pockets"
+                width="1122"
+                height="1402"
+                loading="eager"
+                fetchPriority="high"
+              />
+            </picture>
+            <span className="avatar-whisper" aria-live="polite" key={avatarMessage}>
+              {avatarMessages[avatarMessage]}
+            </span>
+          </button>
+        </div>
+
+        <nav className="hero-object-nav" aria-label="Explore Suyash’s portfolio through clay objects">
+          <a
+            className="hero-object hero-object-laptop"
+            href="#projects"
+            onPointerDown={() => playTone("tap")}
+          >
+            <span className="hero-object-inner">
+              <img src="/clay/hero-laptop.webp" alt="" width="620" height="465" />
+              <span className="hero-object-label"><b>Projects</b><small>open the laptop</small></span>
+            </span>
+          </a>
+          <a
+            className="hero-object hero-object-books"
+            href="#reading"
+            onPointerDown={() => playTone("tap")}
+          >
+            <span className="hero-object-inner">
+              <img src="/clay/hero-books.webp" alt="" width="560" height="560" />
+              <span className="hero-object-label"><b>Reading</b><small>browse the stack</small></span>
+            </span>
+          </a>
+          <a
+            className="hero-object hero-object-shoe"
+            href="#beyond-work"
+            onPointerDown={() => playTone("tap")}
+          >
+            <span className="hero-object-inner">
+              <img src="/clay/hero-shoe.webp" alt="" width="620" height="465" />
+              <span className="hero-object-label"><b>Beyond work</b><small>follow the shoe</small></span>
+            </span>
+          </a>
+        </nav>
+
+        <p className="hero-manifesto">I turn messy product problems into useful, delightful software.</p>
+        <a className="hero-scroll-cue" href="#projects" onPointerDown={() => playTone("tap")}>
+          <span>enter the laptop</span><i aria-hidden="true">↓</i>
+        </a>
       </section>
 
       <section
@@ -673,13 +790,27 @@ export default function Portfolio() {
         aria-labelledby="projects-title"
         style={{ "--project-count": projects.length, "--chapter-progress": 0 } as CSSProperties}
       >
-        <div className="projects-sticky">
-          <div className="projects-heading">
-            <p className="hand-note">A few things I’ve shaped</p>
-            <h2 id="projects-title">Selected work</h2>
-          </div>
+        <div className="projects-sticky project-theatre">
+          <header className="project-theatre-heading">
+            <div>
+              <p className="hand-note">Inside the laptop</p>
+              <h2 id="projects-title">Selected work</h2>
+            </div>
+            <p>Scroll or drag to turn the clay reel.</p>
+          </header>
 
-          <div className="project-stage" aria-live="polite">
+          <div
+            className="project-stage"
+            ref={projectStageRef}
+            aria-live="polite"
+            onPointerDown={startProjectDrag}
+            onPointerMove={moveProjectDrag}
+            onPointerUp={endProjectDrag}
+            onPointerCancel={endProjectDrag}
+          >
+            <div className="project-backdrop-title" aria-hidden="true" key={projects[activeProject].slug}>
+              {projects[activeProject].title}
+            </div>
             {projects.map((project, index) => (
               <article
                 className={`project-scene ${index === activeProject ? "is-active" : index < activeProject ? "is-past" : "is-future"}`}
@@ -692,6 +823,9 @@ export default function Portfolio() {
                   "--project-scale": project.imageScale,
                 } as CSSProperties}
               >
+                <span className="project-scene-index" aria-hidden="true">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
                 <div className="scene-image-wrap">
                   <ResponsiveClayImage image={project.image} imageSmall={project.imageSmall} alt={project.alt} className="scene-image" />
                   {project.slug === "coming-soon" && <span className="orb-glow" aria-hidden="true" />}
@@ -709,6 +843,15 @@ export default function Portfolio() {
           </div>
 
           <div className="project-progress" aria-label="Choose a project chapter">
+            <button
+              className="project-step-button is-previous"
+              type="button"
+              onClick={() => scrollToProject(Math.max(0, activeProject - 1))}
+              disabled={activeProject === 0}
+              aria-label="Previous project"
+            >
+              ←
+            </button>
             <span className="project-count">
               <b className="count-step" key={activeProject}>{String(activeProject + 1).padStart(2, "0")}</b>
               <i />
@@ -726,14 +869,37 @@ export default function Portfolio() {
                 />
               ))}
             </div>
-            <span className="scroll-nudge">scroll to turn the page</span>
+            <button
+              className="project-step-button is-next"
+              type="button"
+              onClick={() => scrollToProject(Math.min(projects.length - 1, activeProject + 1))}
+              disabled={activeProject === projects.length - 1}
+              aria-label="Next project"
+            >
+              →
+            </button>
+          </div>
+
+          <div className="project-chapter-strip" aria-label="Project chapters">
+            {projects.map((project, index) => (
+              <button
+                key={project.slug}
+                type="button"
+                className={index === activeProject ? "is-active" : ""}
+                onClick={() => scrollToProject(index)}
+                aria-current={index === activeProject ? "step" : undefined}
+              >
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                {project.title}
+              </button>
+            ))}
           </div>
         </div>
 
         <div className="projects-mobile" aria-label="Selected project chapters">
           <div className="mobile-projects-heading">
-            <p className="hand-note">A few things I’ve shaped</p>
-            <h2>Selected work</h2>
+            <p className="hand-note">Inside the laptop</p>
+            <h2>Project chapters</h2>
           </div>
           {projects.map((project, index) => (
             <article
