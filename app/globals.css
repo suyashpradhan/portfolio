@@ -14,7 +14,7 @@
   --wood: #8c5b39;
   --shadow: rgba(68, 42, 24, 0.18);
   --shadow-soft: rgba(68, 42, 24, 0.09);
-  --header: rgba(244, 234, 216, 0.78);
+  --header: rgba(244, 234, 216, 0.96);
   --focus: #215fae;
   --fast: 220ms;
   --normal: 480ms;
@@ -39,7 +39,7 @@
   --wood: #b4784d;
   --shadow: rgba(4, 2, 1, 0.42);
   --shadow-soft: rgba(0, 0, 0, 0.24);
-  --header: rgba(36, 32, 29, 0.8);
+  --header: rgba(36, 32, 29, 0.96);
   --focus: #f0bb59;
 }
 
@@ -62,8 +62,15 @@ body {
   font-family: var(--sans);
   font-size: 16px;
   line-height: 1.5;
-  overflow-x: hidden;
+  overflow-x: clip;
   transition: background-color var(--normal) var(--ease), color var(--normal) var(--ease);
+}
+
+:root[data-theme="dark"] body {
+  background:
+    radial-gradient(circle at 76% 8%, rgba(66, 103, 156, 0.17), transparent 32rem),
+    radial-gradient(circle at 16% 0%, rgba(226, 182, 95, 0.11), transparent 25rem),
+    var(--cream);
 }
 
 body::before {
@@ -153,11 +160,10 @@ img {
   width: min(1180px, calc(100% - 36px));
   min-height: 62px;
   padding: 8px 10px 8px 12px;
-  border: 1px solid color-mix(in srgb, var(--ink) 9%, transparent);
+  border: 1px solid color-mix(in srgb, var(--ink) 8%, transparent);
   border-radius: 20px;
   background: var(--header);
-  box-shadow: 0 10px 28px var(--shadow-soft), inset 0 1px 0 color-mix(in srgb, white 52%, transparent);
-  backdrop-filter: blur(18px);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--ink) 7%, var(--cream)), 0 13px 26px var(--shadow-soft), inset 0 1px 0 color-mix(in srgb, white 58%, transparent);
   transform: translateX(-50%);
   transition: background var(--normal) var(--ease), box-shadow var(--normal) var(--ease);
 }
@@ -186,6 +192,11 @@ img {
 .brand-mark:hover > span {
   box-shadow: 0 7px 0 color-mix(in srgb, var(--coral) 66%, #713526), inset 1px 1px 2px rgba(255, 255, 255, 0.36);
   transform: translateY(-2px) rotate(-4deg);
+}
+
+.brand-mark:active > span {
+  box-shadow: 0 2px 0 color-mix(in srgb, var(--coral) 66%, #713526), inset 1px 2px 3px rgba(73, 34, 24, 0.16);
+  transform: translateY(3px) scale(0.96, 0.91);
 }
 
 .brand-mark b {
@@ -247,7 +258,16 @@ img {
 }
 
 .clay-toggle {
+  border-radius: 16px;
   background: transparent;
+}
+
+.clay-toggle:focus-visible {
+  outline: 0;
+}
+
+.clay-toggle:focus-visible .toggle-track {
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--ink) 13%, transparent), inset 0 2px 4px var(--shadow), 0 0 0 3px var(--header), 0 0 0 6px var(--focus);
 }
 
 .toggle-track {
@@ -256,8 +276,9 @@ img {
   width: 50px;
   height: 28px;
   border-radius: 15px 14px 16px 13px;
-  background: color-mix(in srgb, var(--ink) 13%, var(--paper));
-  box-shadow: inset 0 2px 4px var(--shadow), 0 1px 0 rgba(255, 255, 255, 0.55);
+  background: color-mix(in srgb, var(--ink) 10%, var(--paper));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--ink) 13%, transparent), inset 0 2px 4px var(--shadow), 0 1px 0 rgba(255, 255, 255, 0.55);
+  transition: box-shadow var(--fast) var(--ease), transform var(--fast) var(--spring);
 }
 
 .toggle-bead {
@@ -285,6 +306,11 @@ img {
 
 .clay-toggle:active .toggle-bead {
   transform: scale(0.9, 0.84);
+}
+
+.clay-toggle:active .toggle-track {
+  box-shadow: 0 1px 0 color-mix(in srgb, var(--ink) 13%, transparent), inset 0 3px 5px var(--shadow);
+  transform: translateY(2px) scaleY(0.96);
 }
 
 .clay-icon-button {
@@ -321,7 +347,7 @@ img {
 
 .wave-icon.is-active i {
   background: var(--blue);
-  animation: wave 740ms ease-in-out infinite alternate;
+  animation: wave-on 420ms var(--spring) 1;
 }
 
 .wave-icon.is-active i:nth-child(2) {
@@ -332,13 +358,13 @@ img {
   animation-delay: -180ms;
 }
 
-@keyframes wave {
-  to { height: 16px; }
+@keyframes wave-on {
+  50% { height: 16px; }
 }
 
 .hero {
   display: grid;
-  grid-template-columns: minmax(320px, 0.83fr) minmax(500px, 1.17fr);
+  grid-template-columns: minmax(310px, 0.78fr) minmax(520px, 1.22fr);
   align-items: center;
   gap: clamp(36px, 5vw, 82px);
   min-height: 100svh;
@@ -360,7 +386,7 @@ img {
 .hero h1 {
   max-width: 650px;
   margin: 0;
-  font-size: clamp(4.4rem, 7.5vw, 7rem);
+  font-size: clamp(4.4rem, 7.15vw, 6.55rem);
   font-weight: 760;
   letter-spacing: -0.074em;
   line-height: 0.82;
@@ -407,7 +433,7 @@ img {
   font-size: 0.92rem;
   font-weight: 730;
   text-decoration: none;
-  box-shadow: 0 7px 0 var(--blue-deep), 0 13px 24px color-mix(in srgb, var(--blue) 28%, transparent), inset 1px 2px 2px rgba(255, 255, 255, 0.28);
+  box-shadow: 0 7px 0 var(--blue-deep), 0 13px 24px color-mix(in srgb, var(--blue) 25%, transparent), inset 1px 2px 2px rgba(255, 255, 255, 0.36), inset -2px -3px 4px rgba(29, 54, 93, 0.12);
   transition: transform var(--fast) var(--spring), box-shadow var(--fast) var(--ease), filter var(--fast) var(--ease);
 }
 
@@ -418,7 +444,7 @@ img {
 .clay-button:hover {
   filter: brightness(1.05);
   box-shadow: 0 9px 0 var(--blue-deep), 0 16px 28px color-mix(in srgb, var(--blue) 31%, transparent), inset 1px 2px 2px rgba(255, 255, 255, 0.3);
-  transform: translateY(-2px) rotate(-0.4deg);
+  transform: translateY(-2px) rotate(-0.4deg) scale(1.012);
 }
 
 .clay-button:active {
@@ -472,7 +498,7 @@ img {
   border-radius: 31px 27px 36px 25px;
   box-shadow: 0 26px 60px var(--shadow), inset 1px 1px 0 rgba(255, 255, 255, 0.42);
   transform: translate(var(--hero-x), var(--hero-y)) rotateY(var(--hero-ry)) rotateX(var(--hero-rx));
-  transition: transform 560ms var(--ease), box-shadow var(--normal) var(--ease);
+  transition: transform 260ms cubic-bezier(0.22, 0.61, 0.36, 1), box-shadow var(--normal) var(--ease);
   will-change: transform;
 }
 
@@ -503,20 +529,30 @@ img {
   position: absolute;
   z-index: 4;
   display: grid;
-  width: 54px;
-  height: 54px;
+  width: 48px;
+  height: 48px;
   place-items: center;
-  border: 1px dashed color-mix(in srgb, var(--ink) 24%, transparent);
+  border: 0;
   border-radius: 50%;
-  background: color-mix(in srgb, var(--paper) 24%, transparent);
+  background: transparent;
   cursor: pointer;
-  opacity: 0.42;
+  opacity: 0.62;
   transition: opacity var(--fast) var(--ease), transform var(--fast) var(--spring), background var(--fast) var(--ease);
+}
+
+.hero-hotspot::before {
+  width: 12px;
+  height: 12px;
+  border: 1px solid color-mix(in srgb, var(--ink) 20%, transparent);
+  border-radius: 52% 44% 48% 42%;
+  background: color-mix(in srgb, var(--paper) 80%, var(--mustard));
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--wood) 36%, transparent), inset 1px 1px 1px rgba(255, 255, 255, 0.55);
+  content: "";
 }
 
 .hero-hotspot span {
   position: absolute;
-  top: 58px;
+  top: 48px;
   padding: 3px 7px;
   border-radius: 8px;
   background: var(--paper);
@@ -573,8 +609,7 @@ img {
 
 .project-playground {
   position: relative;
-  height: calc(100svh + var(--project-count) * 82svh);
-  min-height: 520vh;
+  height: calc(100svh + var(--project-count) * 72svh);
 }
 
 .projects-sticky {
@@ -621,9 +656,13 @@ img {
   align-items: end;
   visibility: hidden;
   opacity: 0;
-  transform: translateX(8%) scale(0.92) rotate(1.2deg);
-  transition: opacity 500ms var(--ease), transform 760ms var(--spring), visibility 0s 760ms;
+  transform: translateX(7%) scale(0.94) rotate(1deg);
+  transition: opacity 440ms var(--ease), transform 690ms var(--spring), visibility 0s 690ms;
   pointer-events: none;
+}
+
+.project-scene.is-past {
+  transform: translateX(-7%) scale(0.94) rotate(-1deg);
 }
 
 .project-scene.is-active {
@@ -653,7 +692,15 @@ img {
 }
 
 .project-scene.is-active .scene-image {
-  transform: scale(1.012);
+  transform: scale(1.006);
+}
+
+.project-scene.is-past .scene-image {
+  transform: translateX(2.5%) scale(1.03);
+}
+
+.project-scene.is-future .scene-image {
+  transform: translateX(-2.5%) scale(1.03);
 }
 
 .project-copy {
@@ -759,29 +806,48 @@ img {
 .project-dots {
   display: flex;
   flex-direction: column;
-  gap: 9px;
+  gap: 1px;
 }
 
 .project-dots button {
+  position: relative;
+  display: grid;
+  width: 34px;
+  height: 34px;
+  padding: 0;
+  place-items: center;
+  border: 0;
+  border-radius: 12px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.project-dots button::before {
   width: 12px;
   height: 12px;
-  padding: 0;
-  border: 0;
   border-radius: 50% 45% 52% 44%;
   background: color-mix(in srgb, var(--ink) 18%, transparent);
-  cursor: pointer;
+  content: "";
   transition: height var(--fast) var(--spring), background var(--fast) var(--ease), transform var(--fast) var(--spring);
 }
 
-.project-dots button:hover {
+.project-dots button:hover::before {
   background: var(--coral);
-  transform: scale(1.25);
+  transform: scale(1.2);
 }
 
-.project-dots button.is-active {
-  height: 30px;
+.project-dots button.is-active::before {
+  height: 28px;
   border-radius: 8px;
   background: var(--blue);
+}
+
+.project-dots button:focus-visible {
+  outline: 0;
+}
+
+.project-dots button:focus-visible::before {
+  box-shadow: 0 0 0 4px var(--cream), 0 0 0 7px var(--focus);
 }
 
 .scroll-nudge {
@@ -946,6 +1012,8 @@ img {
 }
 
 .clay-shelf button {
+  --rest-r: 0deg;
+  --rest-y: 0px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -960,33 +1028,31 @@ img {
   font-weight: 760;
   box-shadow: 0 10px 0 color-mix(in srgb, var(--coral) 63%, #643225), 0 17px 26px var(--shadow), inset 3px 3px 3px rgba(255, 255, 255, 0.25);
   cursor: pointer;
+  transform: translateY(var(--rest-y)) rotate(var(--rest-r));
   transition: transform var(--normal) var(--spring), box-shadow var(--fast) var(--ease), filter var(--fast) var(--ease);
 }
 
 .clay-shelf button:nth-child(2) {
+  --rest-r: 2deg;
+  --rest-y: -32px;
   background: var(--blue);
   box-shadow: 0 10px 0 var(--blue-deep), 0 17px 26px var(--shadow), inset 3px 3px 3px rgba(255, 255, 255, 0.22);
-  transform: translateY(-32px) rotate(2deg);
 }
 
 .clay-shelf button:nth-child(3) {
+  --rest-r: -2deg;
   background: var(--olive);
   box-shadow: 0 10px 0 color-mix(in srgb, var(--olive) 63%, #34432c), 0 17px 26px var(--shadow), inset 3px 3px 3px rgba(255, 255, 255, 0.22);
-  transform: rotate(-2deg);
 }
 
 .clay-shelf button:hover {
   filter: brightness(1.05);
-  transform: translateY(-12px) rotate(-3deg);
-}
-
-.clay-shelf button:nth-child(2):hover {
-  transform: translateY(-44px) rotate(-2deg);
+  transform: translateY(calc(var(--rest-y) - 12px)) rotate(calc(var(--rest-r) - 2deg)) scale(1.015);
 }
 
 .clay-shelf button:active {
   box-shadow: 0 3px 0 color-mix(in srgb, currentColor 30%, #3c2a20), 0 8px 14px var(--shadow), inset 1px 3px 5px rgba(30, 20, 14, 0.16);
-  transform: translateY(5px) scale(0.97, 0.91);
+  transform: translateY(calc(var(--rest-y) + 7px)) rotate(var(--rest-r)) scale(0.97, 0.91);
 }
 
 .clay-shelf button span {
@@ -1024,14 +1090,26 @@ img {
   transition: transform var(--large) var(--spring);
 }
 
-.contact-character:hover {
-  transform: translateY(6%) rotate(-2deg);
-}
-
 .contact-character img {
   border-radius: 46% 46% 10% 10%;
   filter: brightness(0.75) saturate(0.78) sepia(0.16);
   mask-image: linear-gradient(to bottom, #000 78%, transparent 100%);
+}
+
+.contact:has(.contact-button:hover) .contact-character,
+.contact:has(.contact-button:focus-visible) .contact-character {
+  transform: translateX(-5px) translateY(6%) rotate(-3deg);
+}
+
+.motion-ready [data-reveal] {
+  opacity: 0;
+  transform: translateY(24px) scale(0.992);
+  transition: opacity 540ms var(--ease), transform 720ms var(--ease);
+}
+
+.motion-ready [data-reveal].is-visible {
+  opacity: 1;
+  transform: none;
 }
 
 .contact-copy {
@@ -1312,8 +1390,7 @@ img {
     border: 1px solid color-mix(in srgb, var(--ink) 10%, transparent);
     border-radius: 19px 17px 20px 16px;
     background: var(--header);
-    box-shadow: 0 10px 30px var(--shadow), inset 1px 1px 2px rgba(255, 255, 255, 0.38);
-    backdrop-filter: blur(18px);
+    box-shadow: 0 5px 0 color-mix(in srgb, var(--ink) 9%, var(--cream)), 0 12px 26px var(--shadow), inset 1px 1px 2px rgba(255, 255, 255, 0.42);
   }
 
   .mobile-nav a {
@@ -1388,6 +1465,36 @@ img {
 
   .contact h2 {
     max-width: 92%;
+  }
+}
+
+@media (hover: none) {
+  .brand-mark:hover:not(:active) > span {
+    box-shadow: 0 5px 0 color-mix(in srgb, var(--coral) 66%, #713526), inset 1px 1px 2px rgba(255, 255, 255, 0.36);
+    transform: none;
+  }
+
+  .clay-button:hover:not(:active) {
+    filter: none;
+    box-shadow: 0 7px 0 var(--blue-deep), 0 13px 24px color-mix(in srgb, var(--blue) 25%, transparent), inset 1px 2px 2px rgba(255, 255, 255, 0.36), inset -2px -3px 4px rgba(29, 54, 93, 0.12);
+    transform: none;
+  }
+
+  .contact-button:hover:not(:active) {
+    box-shadow: 0 7px 0 color-mix(in srgb, var(--coral) 62%, #643225), 0 13px 24px rgba(79, 40, 30, 0.22), inset 1px 2px 2px rgba(255, 255, 255, 0.26);
+  }
+
+  .about-controls button:hover:not(:active) {
+    transform: none;
+  }
+
+  .clay-shelf button:hover:not(:active) {
+    filter: none;
+    transform: translateY(var(--rest-y)) rotate(var(--rest-r));
+  }
+
+  .about-image-wrap:hover img {
+    transform: none;
   }
 }
 

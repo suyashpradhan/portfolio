@@ -16,9 +16,9 @@ type Theme = "light" | "dark";
 type Tone = "tap" | "toggle" | "shift";
 
 const toneConfig: Record<Tone, { frequency: number; duration: number; gain: number }> = {
-  tap: { frequency: 150, duration: 0.065, gain: 0.035 },
-  toggle: { frequency: 260, duration: 0.09, gain: 0.028 },
-  shift: { frequency: 190, duration: 0.055, gain: 0.018 },
+  tap: { frequency: 132, duration: 0.055, gain: 0.024 },
+  toggle: { frequency: 218, duration: 0.075, gain: 0.02 },
+  shift: { frequency: 168, duration: 0.045, gain: 0.012 },
 };
 
 function WaveIcon({ active }: { active: boolean }) {
@@ -68,6 +68,7 @@ export default function Portfolio() {
   const projectsRef = useRef<HTMLElement>(null);
   const audioRef = useRef<AudioContext | null>(null);
   const soundRef = useRef(false);
+  const activeProjectRef = useRef(0);
   const lastProjectRef = useRef(0);
 
   useEffect(() => {
@@ -89,6 +90,7 @@ export default function Portfolio() {
     if (!audioRef.current) audioRef.current = new AudioContextConstructor();
 
     const context = audioRef.current;
+    if (context.state === "suspended") void context.resume();
     const oscillator = context.createOscillator();
     const gain = context.createGain();
     const config = toneConfig[tone];
@@ -114,6 +116,7 @@ export default function Portfolio() {
     const update = () => {
       cancelAnimationFrame(frame);
       frame = requestAnimationFrame(() => {
+        if (window.matchMedia("(max-width: 820px)").matches) return;
         const rect = section.getBoundingClientRect();
         const range = Math.max(section.offsetHeight - window.innerHeight, 1);
         const progress = Math.min(1, Math.max(0, -rect.top / range));
@@ -121,7 +124,10 @@ export default function Portfolio() {
           projects.length - 1,
           Math.floor(progress * projects.length),
         );
-        setActiveProject(nextIndex);
+        if (nextIndex !== activeProjectRef.current) {
+          activeProjectRef.current = nextIndex;
+          setActiveProject(nextIndex);
+        }
       });
     };
 
@@ -141,6 +147,38 @@ export default function Portfolio() {
       lastProjectRef.current = activeProject;
     }
   }, [activeProject, playTone]);
+
+  useEffect(() => {
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    if (reducedMotion.matches || !("IntersectionObserver" in window)) return;
+
+    const revealItems = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal]"));
+    document.documentElement.classList.add("motion-ready");
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (!entry.isIntersecting) return;
+          (entry.target as HTMLElement).classList.add("is-visible");
+          observer.unobserve(entry.target);
+        });
+      },
+      { threshold: 0.12, rootMargin: "0px 0px -7%" },
+    );
+
+    revealItems.forEach((item) => {
+      if (item.getBoundingClientRect().top < window.innerHeight * 0.92) {
+        item.classList.add("is-visible");
+      } else {
+        observer.observe(item);
+      }
+    });
+
+    return () => {
+      observer.disconnect();
+      document.documentElement.classList.remove("motion-ready");
+    };
+  }, []);
 
   const changeTheme = () => {
     const nextTheme = theme === "light" ? "dark" : "light";
@@ -164,18 +202,20 @@ export default function Portfolio() {
     const sectionTop = window.scrollY + section.getBoundingClientRect().top;
     const range = Math.max(section.offsetHeight - window.innerHeight, 1);
     const destination = sectionTop + range * (index / Math.max(projects.length - 1, 1));
-    window.scrollTo({ top: destination, behavior: "smooth" });
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    window.scrollTo({ top: destination, behavior: reducedMotion ? "auto" : "smooth" });
     playTone("tap");
   };
 
   const moveHero = (event: ReactMouseEvent<HTMLElement>) => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
     const bounds = event.currentTarget.getBoundingClientRect();
     const x = (event.clientX - bounds.left) / bounds.width - 0.5;
     const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-    event.currentTarget.style.setProperty("--hero-x", `${x * 12}px`);
-    event.currentTarget.style.setProperty("--hero-y", `${y * 10}px`);
-    event.currentTarget.style.setProperty("--hero-rx", `${y * -1.6}deg`);
-    event.currentTarget.style.setProperty("--hero-ry", `${x * 2.2}deg`);
+    event.currentTarget.style.setProperty("--hero-x", `${x * 7}px`);
+    event.currentTarget.style.setProperty("--hero-y", `${y * 6}px`);
+    event.currentTarget.style.setProperty("--hero-rx", `${y * -0.9}deg`);
+    event.currentTarget.style.setProperty("--hero-ry", `${x * 1.3}deg`);
     event.currentTarget.style.setProperty("--light-x", `${(x + 0.5) * 100}%`);
     event.currentTarget.style.setProperty("--light-y", `${(y + 0.5) * 100}%`);
   };
@@ -324,7 +364,9 @@ export default function Portfolio() {
           <div className="project-stage" aria-live="polite">
             {projects.map((project, index) => (
               <article
-                className={`project-scene ${index === activeProject ? "is-active" : ""}`}
+                className={`project-scene ${
+                  index === activeProject ? "is-active" : index < activeProject ? "is-past" : "is-future"
+                }`}
                 key={project.slug}
                 aria-hidden={index !== activeProject}
                 style={
@@ -389,6 +431,7 @@ export default function Portfolio() {
           {projects.map((project, index) => (
             <article
               className="mobile-project-scene"
+              data-reveal
               key={project.slug}
               style={
                 {
@@ -415,7 +458,7 @@ export default function Portfolio() {
       </section>
 
       <section className="about section-shell" id="about" aria-labelledby="about-title">
-        <div className="about-image-wrap">
+        <div className="about-image-wrap" data-reveal>
           <img
             src="/clay/5.webp"
             srcSet="/clay/5-720.webp 720w, /clay/5.webp 1254w"
@@ -432,7 +475,7 @@ export default function Portfolio() {
             {aboutMode === "simplify" && "less, but better"}
           </span>
         </div>
-        <div className="about-copy">
+        <div className="about-copy" data-reveal>
           <p className="hand-note">A little context</p>
           <h2 id="about-title">Engineer by title. Product person by instinct.</h2>
           <p>
@@ -462,12 +505,11 @@ export default function Portfolio() {
       </section>
 
       <section className="now section-shell" id="now" aria-labelledby="now-title">
-        <div className="now-copy">
+        <div className="now-copy" data-reveal>
           <p className="hand-note">My default mode</p>
           <h2 id="now-title">Useful. Thoughtful. A little playful.</h2>
-          <p>That’s the whole recipe, most days.</p>
         </div>
-        <div className="clay-shelf" aria-label="Three interactive clay principles">
+        <div className="clay-shelf" aria-label="Three interactive clay principles" data-reveal>
           <button type="button" onClick={() => playTone("tap")}>
             <span>01</span>
             Useful
@@ -496,7 +538,7 @@ export default function Portfolio() {
             decoding="async"
           />
         </div>
-        <div className="contact-copy">
+        <div className="contact-copy" data-reveal>
           <p className="hand-note">Okay. Enough internet.</p>
           <h2 id="contact-title">Let’s make something useful.</h2>
           <a className="clay-button contact-button" href="#top" onPointerDown={() => playTone("tap")}>
