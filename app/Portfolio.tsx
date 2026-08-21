@@ -70,6 +70,12 @@ export default function Portfolio() {
   const soundRef = useRef(false);
   const activeProjectRef = useRef(0);
   const lastProjectRef = useRef(0);
+  const heroFrameRef = useRef(0);
+  const heroPointerRef = useRef<{
+    target: HTMLElement;
+    clientX: number;
+    clientY: number;
+  } | null>(null);
 
   useEffect(() => {
     const frame = requestAnimationFrame(() => {
@@ -78,6 +84,8 @@ export default function Portfolio() {
     });
     return () => cancelAnimationFrame(frame);
   }, []);
+
+  useEffect(() => () => cancelAnimationFrame(heroFrameRef.current), []);
 
   useEffect(() => {
     soundRef.current = soundEnabled;
@@ -120,10 +128,13 @@ export default function Portfolio() {
         const rect = section.getBoundingClientRect();
         const range = Math.max(section.offsetHeight - window.innerHeight, 1);
         const progress = Math.min(1, Math.max(0, -rect.top / range));
+        const chapterPosition = progress * projects.length;
         const nextIndex = Math.min(
           projects.length - 1,
-          Math.floor(progress * projects.length),
+          Math.floor(chapterPosition),
         );
+        const chapterProgress = Math.min(1, Math.max(0, chapterPosition - nextIndex));
+        section.style.setProperty("--chapter-progress", chapterProgress.toFixed(3));
         if (nextIndex !== activeProjectRef.current) {
           activeProjectRef.current = nextIndex;
           setActiveProject(nextIndex);
@@ -209,27 +220,81 @@ export default function Portfolio() {
 
   const moveHero = (event: ReactMouseEvent<HTMLElement>) => {
     if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
-    const bounds = event.currentTarget.getBoundingClientRect();
-    const x = (event.clientX - bounds.left) / bounds.width - 0.5;
-    const y = (event.clientY - bounds.top) / bounds.height - 0.5;
-    event.currentTarget.style.setProperty("--hero-x", `${x * 7}px`);
-    event.currentTarget.style.setProperty("--hero-y", `${y * 6}px`);
-    event.currentTarget.style.setProperty("--hero-rx", `${y * -0.9}deg`);
-    event.currentTarget.style.setProperty("--hero-ry", `${x * 1.3}deg`);
-    event.currentTarget.style.setProperty("--light-x", `${(x + 0.5) * 100}%`);
-    event.currentTarget.style.setProperty("--light-y", `${(y + 0.5) * 100}%`);
+    heroPointerRef.current = {
+      target: event.currentTarget,
+      clientX: event.clientX,
+      clientY: event.clientY,
+    };
+    if (heroFrameRef.current) return;
+
+    heroFrameRef.current = requestAnimationFrame(() => {
+      heroFrameRef.current = 0;
+      const pointer = heroPointerRef.current;
+      if (!pointer) return;
+
+      const bounds = pointer.target.getBoundingClientRect();
+      const x = (pointer.clientX - bounds.left) / bounds.width - 0.5;
+      const y = (pointer.clientY - bounds.top) / bounds.height - 0.5;
+      const depth = Math.min(1, Math.hypot(x, y) * 1.4);
+      const hotspotProximities = Array.from(
+        pointer.target.querySelectorAll<HTMLElement>(".hero-hotspot"),
+      ).map((hotspot) => {
+        const hotspotBounds = hotspot.getBoundingClientRect();
+        const distance = Math.hypot(
+          pointer.clientX - (hotspotBounds.left + hotspotBounds.width / 2),
+          pointer.clientY - (hotspotBounds.top + hotspotBounds.height / 2),
+        );
+        return { hotspot, near: Math.max(0, 1 - distance / 125).toFixed(3) };
+      });
+
+      pointer.target.style.setProperty("--hero-x", `${x * 7}px`);
+      pointer.target.style.setProperty("--hero-y", `${y * 6}px`);
+      pointer.target.style.setProperty("--image-x", `${x * -1.3}px`);
+      pointer.target.style.setProperty("--image-y", `${y * -1}px`);
+      pointer.target.style.setProperty("--hero-rx", `${y * -0.9}deg`);
+      pointer.target.style.setProperty("--hero-ry", `${x * 1.3}deg`);
+      pointer.target.style.setProperty("--hero-depth", depth.toFixed(3));
+      pointer.target.style.setProperty("--light-x", `${(x + 0.5) * 100}%`);
+      pointer.target.style.setProperty("--light-y", `${(y + 0.5) * 100}%`);
+
+      hotspotProximities.forEach(({ hotspot, near }) => {
+        hotspot.style.setProperty("--near", near);
+      });
+    });
   };
 
   const resetHero = (event: ReactMouseEvent<HTMLElement>) => {
+    cancelAnimationFrame(heroFrameRef.current);
+    heroFrameRef.current = 0;
+    heroPointerRef.current = null;
     event.currentTarget.style.setProperty("--hero-x", "0px");
     event.currentTarget.style.setProperty("--hero-y", "0px");
+    event.currentTarget.style.setProperty("--image-x", "0px");
+    event.currentTarget.style.setProperty("--image-y", "0px");
     event.currentTarget.style.setProperty("--hero-rx", "0deg");
     event.currentTarget.style.setProperty("--hero-ry", "0deg");
+    event.currentTarget.style.setProperty("--hero-depth", "0");
+    event.currentTarget.style.setProperty("--light-x", "50%");
+    event.currentTarget.style.setProperty("--light-y", "40%");
+    event.currentTarget.querySelectorAll<HTMLElement>(".hero-hotspot").forEach((hotspot) => {
+      hotspot.style.setProperty("--near", "0");
+    });
   };
 
-  const reactToProp = (reaction: string) => {
+  const reactToProp = (event: ReactMouseEvent<HTMLButtonElement>, reaction: string) => {
     setHeroReaction(reaction);
     playTone("tap");
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+    event.currentTarget.animate(
+      [
+        { transform: "scale(1) rotate(0deg)" },
+        { transform: "scale(0.86, 0.8) rotate(-2deg)", offset: 0.18 },
+        { transform: "scale(1.08, 0.95) rotate(3deg)", offset: 0.5 },
+        { transform: "scale(0.98, 1.03) rotate(-1deg)", offset: 0.76 },
+        { transform: "scale(1) rotate(0deg)" },
+      ],
+      { duration: 520, easing: "cubic-bezier(0.2, 0.82, 0.24, 1.08)" },
+    );
   };
 
   return (
@@ -291,7 +356,7 @@ export default function Portfolio() {
           </p>
           <div className="hero-actions">
             <a className="clay-button primary" href="#projects" onPointerDown={() => playTone("tap")}>
-              Explore my work <span aria-hidden="true">↓</span>
+              Explore my work <span className="hand-arrow arrow-down" aria-hidden="true">↓</span>
             </a>
             <span className="tiny-copy">Made with code, curiosity and imaginary clay.</span>
           </div>
@@ -321,7 +386,7 @@ export default function Portfolio() {
           <button
             className="hero-hotspot hotspot-cup"
             type="button"
-            onClick={() => reactToProp("Coffee rotated. Productivity unchanged.")}
+            onClick={(event) => reactToProp(event, "Coffee rotated. Productivity unchanged.")}
             aria-label="Wiggle the clay coffee cup"
           >
             <span>coffee?</span>
@@ -329,7 +394,7 @@ export default function Portfolio() {
           <button
             className="hero-hotspot hotspot-books"
             type="button"
-            onClick={() => reactToProp("The book stack approves.")}
+            onClick={(event) => reactToProp(event, "The book stack approves.")}
             aria-label="Press the clay book stack"
           >
             <span>press</span>
@@ -337,7 +402,7 @@ export default function Portfolio() {
           <button
             className="hero-hotspot hotspot-trophy"
             type="button"
-            onClick={() => reactToProp("A tiny, unnecessary shine.")}
+            onClick={(event) => reactToProp(event, "A tiny, unnecessary shine.")}
             aria-label="Shine the clay trophy"
           >
             <span>shine</span>
@@ -353,7 +418,7 @@ export default function Portfolio() {
         id="projects"
         ref={projectsRef}
         aria-labelledby="projects-title"
-        style={{ "--project-count": projects.length } as CSSProperties}
+        style={{ "--project-count": projects.length, "--chapter-progress": 0 } as CSSProperties}
       >
         <div className="projects-sticky">
           <div className="projects-heading">
@@ -403,7 +468,9 @@ export default function Portfolio() {
 
           <div className="project-progress" aria-label="Choose a project chapter">
             <span className="project-count">
-              <b>{String(activeProject + 1).padStart(2, "0")}</b>
+              <b className="count-step" key={activeProject}>
+                {String(activeProject + 1).padStart(2, "0")}
+              </b>
               <i />
               {String(projects.length).padStart(2, "0")}
             </span>
@@ -469,7 +536,7 @@ export default function Portfolio() {
             loading="lazy"
             decoding="async"
           />
-          <span className="about-thought" aria-live="polite">
+          <span className="about-thought" aria-live="polite" key={aboutMode}>
             {aboutMode === "build" && "make it useful"}
             {aboutMode === "listen" && "listen before shaping"}
             {aboutMode === "simplify" && "less, but better"}
@@ -542,7 +609,7 @@ export default function Portfolio() {
           <p className="hand-note">Okay. Enough internet.</p>
           <h2 id="contact-title">Let’s make something useful.</h2>
           <a className="clay-button contact-button" href="#top" onPointerDown={() => playTone("tap")}>
-            Back to the desk <span aria-hidden="true">↑</span>
+            Back to the desk <span className="hand-arrow arrow-up" aria-hidden="true">↑</span>
           </a>
         </div>
         <footer>

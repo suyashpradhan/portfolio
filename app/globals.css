@@ -304,6 +304,26 @@ img {
   background: var(--blue);
 }
 
+@media (hover: hover) and (pointer: fine) {
+  .clay-toggle:hover .toggle-bead {
+    transform: rotate(-9deg) scale(1.04);
+  }
+
+  .clay-toggle[aria-pressed="true"]:hover .toggle-bead {
+    transform: rotate(9deg) scale(1.04);
+  }
+
+  .clay-icon-button:hover {
+    box-shadow: 0 6px 0 color-mix(in srgb, var(--ink) 12%, transparent), inset 1px 1px 2px rgba(255, 255, 255, 0.5);
+    transform: translateY(-2px) rotate(1deg);
+  }
+
+  .clay-icon-button:hover .wave-icon i:first-child,
+  .clay-icon-button:hover .wave-icon i:last-child {
+    height: 11px;
+  }
+}
+
 .clay-toggle:active .toggle-bead {
   transform: scale(0.9, 0.84);
 }
@@ -433,8 +453,45 @@ img {
   font-size: 0.92rem;
   font-weight: 730;
   text-decoration: none;
+  transform-origin: 50% 100%;
   box-shadow: 0 7px 0 var(--blue-deep), 0 13px 24px color-mix(in srgb, var(--blue) 25%, transparent), inset 1px 2px 2px rgba(255, 255, 255, 0.36), inset -2px -3px 4px rgba(29, 54, 93, 0.12);
   transition: transform var(--fast) var(--spring), box-shadow var(--fast) var(--ease), filter var(--fast) var(--ease);
+}
+
+.hand-arrow {
+  display: inline-block;
+  font-family: var(--hand);
+  font-size: 1.08em;
+  line-height: 1;
+  animation: arrow-whisper 5.6s var(--ease) infinite;
+}
+
+.arrow-up {
+  animation-name: arrow-whisper-up;
+}
+
+@media (hover: hover) and (pointer: fine) {
+  .clay-button:hover .arrow-down {
+    animation: none;
+    transform: translateY(2px) rotate(-5deg);
+  }
+
+  .clay-button:hover .arrow-up {
+    animation: none;
+    transform: translateY(-2px) rotate(5deg);
+  }
+}
+
+@keyframes arrow-whisper {
+  0%, 78%, 100% { transform: translateY(0) rotate(0deg); }
+  86% { transform: translateY(2px) rotate(-4deg); }
+  92% { transform: translateY(-1px) rotate(2deg); }
+}
+
+@keyframes arrow-whisper-up {
+  0%, 78%, 100% { transform: translateY(0) rotate(0deg); }
+  86% { transform: translateY(-2px) rotate(4deg); }
+  92% { transform: translateY(1px) rotate(-2deg); }
 }
 
 .clay-button.primary {
@@ -465,8 +522,11 @@ img {
 .hero-clay-stage {
   --hero-x: 0px;
   --hero-y: 0px;
+  --image-x: 0px;
+  --image-y: 0px;
   --hero-rx: 0deg;
   --hero-ry: 0deg;
+  --hero-depth: 0;
   --light-x: 50%;
   --light-y: 40%;
   position: relative;
@@ -487,8 +547,9 @@ img {
   background: var(--shadow);
   filter: blur(30px);
   content: "";
-  transform: translate(calc(var(--hero-x) * -0.4), 0) scale(0.9);
-  transition: transform var(--normal) var(--ease);
+  opacity: calc(0.88 + var(--hero-depth) * 0.12);
+  transform: translate(calc(var(--hero-x) * -0.4), 0) scale(calc(0.9 + var(--hero-depth) * 0.03), calc(1 + var(--hero-depth) * 0.04));
+  transition: transform var(--normal) var(--ease), opacity var(--normal) var(--ease);
 }
 
 .hero-clay-stage picture {
@@ -505,7 +566,15 @@ img {
 .hero-image {
   width: 100%;
   height: auto;
-  transition: filter var(--normal) var(--ease), transform var(--normal) var(--spring);
+  transform-origin: 50% 68%;
+  animation: studio-breathe 11s var(--ease) infinite;
+  transition: filter var(--normal) var(--ease);
+  will-change: transform;
+}
+
+@keyframes studio-breathe {
+  0%, 100% { transform: translate(var(--image-x), var(--image-y)) scale(1.006); }
+  50% { transform: translate(var(--image-x), var(--image-y)) scale(1.011); }
 }
 
 :root[data-theme="dark"] .hero-image,
@@ -526,6 +595,7 @@ img {
 }
 
 .hero-hotspot {
+  --near: 0;
   position: absolute;
   z-index: 4;
   display: grid;
@@ -536,7 +606,8 @@ img {
   border-radius: 50%;
   background: transparent;
   cursor: pointer;
-  opacity: 0.62;
+  opacity: calc(0.58 + var(--near) * 0.3);
+  transform: scale(calc(1 + var(--near) * 0.08));
   transition: opacity var(--fast) var(--ease), transform var(--fast) var(--spring), background var(--fast) var(--ease);
 }
 
@@ -548,6 +619,8 @@ img {
   background: color-mix(in srgb, var(--paper) 80%, var(--mustard));
   box-shadow: 0 3px 0 color-mix(in srgb, var(--wood) 36%, transparent), inset 1px 1px 1px rgba(255, 255, 255, 0.55);
   content: "";
+  filter: brightness(calc(1 + var(--near) * 0.12));
+  transition: filter var(--fast) var(--ease), box-shadow var(--fast) var(--ease);
 }
 
 .hero-hotspot span {
@@ -682,6 +755,11 @@ img {
   background: color-mix(in srgb, var(--project-accent) 20%, var(--paper));
   box-shadow: 0 28px 55px var(--shadow), 0 10px 0 color-mix(in srgb, var(--project-accent) 45%, var(--wood)), inset 2px 2px 3px rgba(255, 255, 255, 0.45);
   transform: translateY(-3px);
+  transition: box-shadow 620ms var(--ease), transform 620ms var(--spring);
+}
+
+.project-scene.is-active .scene-image-wrap {
+  box-shadow: 0 31px 62px var(--shadow), 0 10px 0 color-mix(in srgb, var(--project-accent) 45%, var(--wood)), inset 2px 2px 3px rgba(255, 255, 255, 0.45);
 }
 
 .scene-image {
@@ -692,7 +770,7 @@ img {
 }
 
 .project-scene.is-active .scene-image {
-  transform: scale(1.006);
+  transform: scale(calc(1.006 + var(--chapter-progress) * 0.006));
 }
 
 .project-scene.is-past .scene-image {
@@ -720,6 +798,22 @@ img {
 .project-scene.is-active .project-copy {
   transform: translateY(0) rotate(-0.6deg);
 }
+
+.project-copy > * {
+  opacity: 0;
+  transform: translateY(8px);
+  transition: opacity 360ms var(--ease), transform 460ms var(--spring);
+}
+
+.project-scene.is-active .project-copy > * {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.project-scene.is-active .project-copy > :nth-child(1) { transition-delay: 150ms; }
+.project-scene.is-active .project-copy > :nth-child(2) { transition-delay: 190ms; }
+.project-scene.is-active .project-copy > :nth-child(3) { transition-delay: 230ms; }
+.project-scene.is-active .project-copy > :nth-child(4) { transition-delay: 270ms; }
 
 .project-eyebrow {
   margin: 0 0 4px;
@@ -792,8 +886,19 @@ img {
 }
 
 .project-count b {
+  display: inline-block;
   color: var(--ink);
   font-size: 1rem;
+}
+
+.project-count .count-step {
+  animation: count-squish 380ms var(--spring) both;
+}
+
+@keyframes count-squish {
+  0% { opacity: 0.35; transform: translateY(-5px) scale(0.82, 1.12); }
+  58% { opacity: 1; transform: translateY(1px) scale(1.08, 0.94); }
+  100% { opacity: 1; transform: none; }
 }
 
 .project-count i {
@@ -840,6 +945,7 @@ img {
   height: 28px;
   border-radius: 8px;
   background: var(--blue);
+  box-shadow: 0 3px 0 color-mix(in srgb, var(--blue-deep) 72%, transparent);
 }
 
 .project-dots button:focus-visible {
@@ -921,6 +1027,13 @@ img {
   text-align: center;
   box-shadow: 0 8px 18px var(--shadow-soft), inset 1px 1px 2px rgba(255, 255, 255, 0.55);
   transform: rotate(4deg);
+  animation: thought-pop 430ms var(--spring) both;
+}
+
+@keyframes thought-pop {
+  0% { opacity: 0.45; transform: rotate(4deg) scale(0.78, 0.92); }
+  62% { opacity: 1; transform: rotate(2deg) scale(1.06, 0.96); }
+  100% { opacity: 1; transform: rotate(4deg) scale(1); }
 }
 
 .about-copy h2,
@@ -1099,6 +1212,10 @@ img {
 .contact:has(.contact-button:hover) .contact-character,
 .contact:has(.contact-button:focus-visible) .contact-character {
   transform: translateX(-5px) translateY(6%) rotate(-3deg);
+}
+
+.contact:has(.contact-button:active) .contact-character {
+  transform: translateX(2px) translateY(8%) rotate(1deg) scale(0.99);
 }
 
 .motion-ready [data-reveal] {
