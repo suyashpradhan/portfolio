@@ -9,6 +9,8 @@ export type Project = {
   alt: string;
   accent: string;
   ink: string;
+  objectPosition: string;
+  imageScale: number;
 };
 
 export const projects: Project[] = [
@@ -23,6 +25,8 @@ export const projects: Project[] = [
     alt: "Clay characters sharing a story from an open book",
     accent: "#d69056",
     ink: "#35251e",
+    objectPosition: "50% 42%",
+    imageScale: 1.04,
   },
   {
     slug: "voice-notes",
@@ -35,6 +39,8 @@ export const projects: Project[] = [
     alt: "Clay character speaking into a microphone as a checklist appears",
     accent: "#657b58",
     ink: "#f9f0df",
+    objectPosition: "73% 48%",
+    imageScale: 1.09,
   },
   {
     slug: "visual-library",
@@ -47,6 +53,8 @@ export const projects: Project[] = [
     alt: "Clay character organizing image panels into wooden drawers",
     accent: "#68839b",
     ink: "#f9f0df",
+    objectPosition: "78% 50%",
+    imageScale: 1.12,
   },
   {
     slug: "epfo",
@@ -59,6 +67,8 @@ export const projects: Project[] = [
     alt: "Clay character navigating documents toward an institutional building",
     accent: "#cf6d58",
     ink: "#35251e",
+    objectPosition: "69% 50%",
+    imageScale: 1.08,
   },
   {
     slug: "coming-soon",
@@ -71,5 +81,7 @@ export const projects: Project[] = [
     alt: "Clay character with round glasses studying a glowing orb",
     accent: "#e2a83e",
     ink: "#35251e",
+    objectPosition: "70% 48%",
+    imageScale: 1.1,
   },
 ];
