@@ -34,9 +34,9 @@ const toneConfig: Record<Tone, { frequency: number; duration: number; gain: numb
 };
 
 const avatarMessages = [
-  "Hello. I left the interesting part inside the laptop.",
-  "I build between product, design and engineering.",
-  "Come on — I’ll show you what mattered in the work.",
+  "Hey — glad you made it.",
+  "I like turning ambiguity into something useful.",
+  "The laptop has the work. I’ll be right here.",
 ] as const;
 
 const projectGuideCopy = [
@@ -50,7 +50,7 @@ const projectGuideCopy = [
 const projectGuidePoses = [
   "/clay/avatar-wave-v3.webp",
   "/clay/avatar-neutral-v3.webp",
-  "/clay/avatar-walk-b-v3.webp",
+  "/clay/avatar-neutral-v3.webp",
   "/clay/avatar-neutral-v3.webp",
   "/clay/avatar-wave-v3.webp",
 ] as const;
@@ -287,7 +287,6 @@ export default function Portfolio() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
   const [avatarMessage, setAvatarMessage] = useState(0);
-  const [portalActivated, setPortalActivated] = useState(false);
   const [aboutMode, setAboutMode] = useState<AboutMode>("prototype");
   const [activeSkill, setActiveSkill] = useState<SkillGroup>("engineering");
   const [activeContribution, setActiveContribution] = useState<ContributionMode>("useful");
@@ -302,7 +301,6 @@ export default function Portfolio() {
   const activeProjectRef = useRef(0);
   const lastProjectRef = useRef(0);
   const heroFrameRef = useRef(0);
-  const portalTimerRef = useRef(0);
   const cursorFrameRef = useRef(0);
   const cursorRef = useRef<HTMLSpanElement>(null);
   const heroPointerRef = useRef<{
@@ -328,7 +326,6 @@ export default function Portfolio() {
   useEffect(() => () => {
     cancelAnimationFrame(heroFrameRef.current);
     cancelAnimationFrame(cursorFrameRef.current);
-    window.clearTimeout(portalTimerRef.current);
   }, []);
 
   useEffect(() => {
@@ -417,89 +414,32 @@ export default function Portfolio() {
     let disposed = false;
     let revert = () => {};
 
-    void Promise.all([import("gsap"), import("gsap/ScrollTrigger")]).then(
-      ([{ gsap }, { ScrollTrigger }]) => {
+    void import("gsap").then(
+      ({ gsap }) => {
         if (disposed) return;
-        gsap.registerPlugin(ScrollTrigger);
 
         const context = gsap.context(() => {
-          const intro = gsap.timeline({ defaults: { ease: "back.out(1.18)" } });
+          const intro = gsap.timeline({ defaults: { ease: "power3.out" } });
           intro
-            .from(".hero-intro > *", {
-              y: 30,
+            .from(".simple-hero-intro > *", {
+              y: 22,
               opacity: 0,
-              duration: 0.78,
-              stagger: 0.08,
+              duration: 0.66,
+              stagger: 0.07,
               clearProps: "transform,opacity",
             })
             .from(
-              ".hero-guide",
-              { y: 42, scale: 0.88, opacity: 0, duration: 0.8, clearProps: "transform,opacity" },
-              "-=0.48",
+              ".simple-hero-avatar",
+              { y: 32, scale: 0.94, opacity: 0, duration: 0.72, clearProps: "transform,opacity" },
+              "-=0.4",
             )
             .from(
-              ".portal-laptop-wrap",
-              { y: 44, scale: 0.78, opacity: 0, duration: 0.76, clearProps: "transform,opacity" },
-              "-=0.62",
-            )
-            .from(
-              ".hero-side-quest, .hero-scroll-cue",
-              { y: 14, opacity: 0, duration: 0.5, stagger: 0.08, clearProps: "transform,opacity" },
-              "-=0.35",
+              ".simple-project-door",
+              { y: 12, opacity: 0, duration: 0.48, clearProps: "transform,opacity" },
+              "-=0.3",
             );
 
-          const media = gsap.matchMedia();
-          media.add("(min-width: 821px)", () => {
-            const portal = gsap.timeline({
-              defaults: { ease: "none" },
-              scrollTrigger: {
-                trigger: ".portal-hero",
-                start: "top top",
-                end: "bottom bottom",
-                scrub: 0.72,
-              },
-            });
-
-            portal
-              .to(".hero-intro", { y: -52, scale: 0.96, opacity: 0, duration: 0.18 }, 0)
-              .to(".hero-side-quests, .hero-scroll-cue", { opacity: 0, duration: 0.12 }, 0)
-              .set(".pose-neutral", { opacity: 0 }, 0.06)
-              .set(".pose-wave", { opacity: 1 }, 0.06)
-              .set(".pose-wave", { opacity: 0 }, 0.15)
-              .set(".pose-walk-a", { opacity: 1 }, 0.15)
-              .to(".hero-guide", { x: "15vw", y: "2vh", duration: 0.15 }, 0.14)
-              .set(".pose-walk-a", { opacity: 0 }, 0.29)
-              .set(".pose-walk-b", { opacity: 1 }, 0.29)
-              .to(".hero-guide", { x: "24vw", y: "3vh", duration: 0.15 }, 0.28)
-              .to(".portal-laptop-lid", { rotateX: 0, duration: 0.3 }, 0.2)
-              .to(".portal-screen-content", { opacity: 1, scale: 1, duration: 0.18 }, 0.38)
-              .set(".pose-walk-b", { opacity: 0 }, 0.43)
-              .set(".pose-walk-a", { opacity: 1 }, 0.43)
-              .to(".hero-guide", { x: "30vw", y: "6vh", scale: 0.7, duration: 0.14 }, 0.42)
-              .set(".pose-walk-a", { opacity: 0 }, 0.56)
-              .set(".pose-neutral", { opacity: 1 }, 0.56)
-              .to(".hero-guide", { x: "34vw", y: "10vh", scale: 0.24, opacity: 0, duration: 0.21 }, 0.55)
-              .to(".portal-laptop-wrap", { y: "-20vh", scale: 4.8, duration: 0.35 }, 0.58)
-              .to(".portal-laptop-base, .portal-open-label", { opacity: 0, duration: 0.13 }, 0.73)
-              .to(".portal-screen-content", { scale: 1.08, duration: 0.22 }, 0.67)
-              .to(".portal-curtain", { opacity: 1, duration: 0.15 }, 0.85);
-
-            gsap.from(".screen-projects .project-theatre-heading, .screen-projects .project-stage", {
-              y: 26,
-              opacity: 0,
-              duration: 0.6,
-              stagger: 0.08,
-              ease: "power2.out",
-              scrollTrigger: { trigger: ".screen-projects", start: "top 88%" },
-            });
-          });
-
-          ScrollTrigger.refresh();
-
-          revert = () => {
-            media.revert();
-            context.revert();
-          };
+          revert = () => context.revert();
         }, page);
       },
     );
@@ -632,30 +572,6 @@ export default function Portfolio() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     window.scrollTo({ top: destination, behavior: reducedMotion ? "auto" : "smooth" });
     playTone("tap");
-  };
-
-  const enterLaptop = () => {
-    const hero = pageRef.current?.querySelector<HTMLElement>(".portal-hero");
-    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    const compact = window.matchMedia("(max-width: 820px)").matches;
-    setPortalActivated(true);
-    playTone("toggle");
-
-    if (!hero || reducedMotion) {
-      projectsRef.current?.scrollIntoView({ behavior: reducedMotion ? "auto" : "smooth" });
-      return;
-    }
-
-    if (compact) {
-      window.clearTimeout(portalTimerRef.current);
-      portalTimerRef.current = window.setTimeout(() => {
-        projectsRef.current?.scrollIntoView({ behavior: "smooth" });
-      }, 820);
-      return;
-    }
-
-    const destination = window.scrollY + hero.getBoundingClientRect().top + hero.offsetHeight - window.innerHeight;
-    window.scrollTo({ top: destination, behavior: "smooth" });
   };
 
   const moveHero = (event: ReactMouseEvent<HTMLElement>) => {
@@ -794,80 +710,48 @@ export default function Portfolio() {
         </div>
       </header>
 
-      <section
-        className={`hero hero-world portal-hero ${portalActivated ? "is-portal-open" : ""}`}
-        aria-labelledby="hero-title"
-      >
-        <div className="hero-sticky" onMouseMove={moveHero} onMouseLeave={resetHero}>
+      <section className="hero hero-world simple-hero" aria-labelledby="hero-title">
+        <div className="simple-hero-scene" onMouseMove={moveHero} onMouseLeave={resetHero}>
           <div className="hero-atmosphere" aria-hidden="true">
             <i className="atmosphere-orb orb-one" />
             <i className="atmosphere-orb orb-two" />
             <i className="atmosphere-squiggle">~</i>
           </div>
 
-          <div className="hero-intro">
+          <div className="simple-hero-intro">
             <p className="hero-signature">Suyash Pradhan · Product Engineer</p>
             <h1 id="hero-title">
-              <span>I build useful things</span>
-              <span>from messy problems.</span>
+              I make complex products
+              <span> clear, useful and alive.</span>
             </h1>
             <p>I work where product judgement, interaction design and dependable engineering meet.</p>
           </div>
 
-          <nav className="hero-side-quests" aria-label="Explore more about Suyash">
-            <a className="hero-object hero-side-quest quest-books" href="#reading" onPointerDown={() => playTone("tap")}>
-              <img src="/clay/hero-books.webp" alt="" width="560" height="560" />
-              <span><small>Side quest 01</small><b>What I’m reading</b></span>
-            </a>
-            <a className="hero-object hero-side-quest quest-shoe" href="#beyond-work" onPointerDown={() => playTone("tap")}>
-              <img src="/clay/hero-shoe.webp" alt="" width="620" height="465" />
-              <span><small>Side quest 02</small><b>How I train</b></span>
-            </a>
-          </nav>
-
-          <div className="hero-guide">
-            <span className="hero-guide-shadow" aria-hidden="true" />
+          <div className="simple-hero-avatar">
+            <span className="simple-avatar-shadow" aria-hidden="true" />
             <button
               className="hero-avatar-button"
               type="button"
               onClick={reactToAvatar}
               aria-label="Ask clay Suyash for another thought"
             >
-              <img className="avatar-pose pose-neutral" src="/clay/avatar-neutral-v3.webp" alt="Clay Suyash ready to guide you" width="520" height="650" loading="eager" fetchPriority="high" />
+              <img className="avatar-pose pose-neutral" src="/clay/avatar-neutral-v3.webp" alt="Clay Suyash" width="520" height="650" loading="eager" fetchPriority="high" />
               <img className="avatar-pose pose-wave" src="/clay/avatar-wave-v3.webp" alt="" width="520" height="650" loading="eager" />
-              <img className="avatar-pose pose-walk-a" src="/clay/avatar-walk-a-v3.webp" alt="" width="520" height="650" loading="eager" />
-              <img className="avatar-pose pose-walk-b" src="/clay/avatar-walk-b-v3.webp" alt="" width="520" height="650" loading="eager" />
               <span className="avatar-whisper" aria-live="polite" key={avatarMessage}>
                 {avatarMessages[avatarMessage]}
               </span>
             </button>
           </div>
 
-          <div className="portal-laptop-wrap">
-            <button className="portal-laptop-shell" type="button" onClick={enterLaptop} aria-label="Open the laptop and enter selected projects">
-              <span className="portal-laptop-lid">
-                <span className="portal-laptop-screen">
-                  <span className="portal-screen-glare" aria-hidden="true" />
-                  <span className="portal-screen-content">
-                    <small>suyash.work / projects</small>
-                    <b>Come inside.</b>
-                    <em>Five experiments in making complicated things feel clearer.</em>
-                  </span>
-                </span>
-              </span>
-              <span className="portal-laptop-hinge" aria-hidden="true" />
-              <span className="portal-laptop-base" aria-hidden="true">
-                <i className="portal-keyboard" />
-                <i className="portal-trackpad" />
-              </span>
-              <span className="portal-open-label"><b>Projects</b><small>tap or scroll to open</small></span>
-            </button>
-          </div>
-
-          <button className="hero-scroll-cue" type="button" onClick={enterLaptop}>
-            <span>scroll to open the laptop</span><i aria-hidden="true">↓</i>
-          </button>
-          <div className="portal-curtain" aria-hidden="true" />
+          <a
+            className="hero-object simple-project-door"
+            href="#projects"
+            onPointerDown={() => playTone("tap")}
+            aria-label="View selected projects"
+          >
+            <img src="/clay/hero-laptop.webp" alt="" width="640" height="480" loading="eager" />
+            <span><small>Selected work</small><b>Open the laptop <i aria-hidden="true">→</i></b></span>
+          </a>
         </div>
       </section>
 

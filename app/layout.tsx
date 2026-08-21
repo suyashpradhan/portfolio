@@ -4,6 +4,7 @@ import "@fontsource/fredoka/latin-400.css";
 import "@fontsource/fredoka/latin-500.css";
 import "@fontsource/fredoka/latin-600.css";
 import "@fontsource/fredoka/latin-700.css";
+import "@fontsource-variable/bricolage-grotesque/wght.css";
 import "./globals.css";
 
 export async function generateMetadata(): Promise<Metadata> {
