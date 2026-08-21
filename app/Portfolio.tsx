@@ -28,9 +28,9 @@ const PORTFOLIO_LINKS = {
 };
 
 const toneConfig: Record<Tone, { frequency: number; duration: number; gain: number }> = {
-  tap: { frequency: 142, duration: 0.085, gain: 0.04 },
-  toggle: { frequency: 238, duration: 0.12, gain: 0.038 },
-  shift: { frequency: 176, duration: 0.07, gain: 0.022 },
+  tap: { frequency: 188, duration: 0.11, gain: 0.065 },
+  toggle: { frequency: 318, duration: 0.18, gain: 0.072 },
+  shift: { frequency: 224, duration: 0.09, gain: 0.036 },
 };
 
 const avatarMessages = [
@@ -287,6 +287,7 @@ export default function Portfolio() {
   const [soundEnabled, setSoundEnabled] = useState(false);
   const [activeProject, setActiveProject] = useState(0);
   const [avatarMessage, setAvatarMessage] = useState(0);
+  const [isGreeting, setIsGreeting] = useState(true);
   const [aboutMode, setAboutMode] = useState<AboutMode>("prototype");
   const [activeSkill, setActiveSkill] = useState<SkillGroup>("engineering");
   const [activeContribution, setActiveContribution] = useState<ContributionMode>("useful");
@@ -329,6 +330,13 @@ export default function Portfolio() {
   }, []);
 
   useEffect(() => {
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
+    const greetingTimer = window.setTimeout(() => setIsGreeting(false), 1650);
+    return () => window.clearTimeout(greetingTimer);
+  }, []);
+
+  useEffect(() => {
     soundRef.current = soundEnabled;
   }, [soundEnabled]);
 
@@ -337,31 +345,35 @@ export default function Portfolio() {
 
     if (!audioRef.current) audioRef.current = new AudioContext();
     const context = audioRef.current;
-    if (context.state === "suspended") void context.resume();
 
-    const config = toneConfig[tone];
-    const master = context.createGain();
-    const now = context.currentTime;
-    master.gain.setValueAtTime(0.0001, now);
-    master.gain.exponentialRampToValueAtTime(config.gain, now + 0.009);
-    master.gain.exponentialRampToValueAtTime(0.0001, now + config.duration);
-    master.connect(context.destination);
+    const sound = () => {
+      const config = toneConfig[tone];
+      const master = context.createGain();
+      const now = context.currentTime;
+      master.gain.setValueAtTime(0.0001, now);
+      master.gain.exponentialRampToValueAtTime(config.gain, now + 0.012);
+      master.gain.exponentialRampToValueAtTime(0.0001, now + config.duration);
+      master.connect(context.destination);
 
-    [1, 1.52].forEach((ratio, index) => {
-      const oscillator = context.createOscillator();
-      const voice = context.createGain();
-      oscillator.type = index === 0 ? "triangle" : "sine";
-      oscillator.frequency.setValueAtTime(config.frequency * ratio, now);
-      oscillator.frequency.exponentialRampToValueAtTime(
-        config.frequency * ratio * 0.7,
-        now + config.duration,
-      );
-      voice.gain.value = index === 0 ? 0.78 : 0.22;
-      oscillator.connect(voice);
-      voice.connect(master);
-      oscillator.start(now);
-      oscillator.stop(now + config.duration + 0.02);
-    });
+      [1, 1.48].forEach((ratio, index) => {
+        const oscillator = context.createOscillator();
+        const voice = context.createGain();
+        oscillator.type = index === 0 ? "triangle" : "sine";
+        oscillator.frequency.setValueAtTime(config.frequency * ratio, now);
+        oscillator.frequency.exponentialRampToValueAtTime(
+          config.frequency * ratio * 0.72,
+          now + config.duration,
+        );
+        voice.gain.value = index === 0 ? 0.76 : 0.24;
+        oscillator.connect(voice);
+        voice.connect(master);
+        oscillator.start(now);
+        oscillator.stop(now + config.duration + 0.025);
+      });
+    };
+
+    if (context.state === "suspended") void context.resume().then(sound);
+    else sound();
   }, []);
 
   useEffect(() => {
@@ -369,6 +381,8 @@ export default function Portfolio() {
     const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
     const cursor = cursorRef.current;
     if (!cursor || !finePointer.matches || reducedMotion.matches) return;
+    const heroScene = pageRef.current?.querySelector<HTMLElement>(".simple-hero-scene");
+    const avatar = pageRef.current?.querySelector<HTMLElement>(".simple-hero-avatar");
 
     document.body.classList.add("has-clay-cursor");
     let nextX = -40;
@@ -378,6 +392,15 @@ export default function Portfolio() {
       cursorFrameRef.current = 0;
       cursor.style.setProperty("--cursor-x", `${nextX}px`);
       cursor.style.setProperty("--cursor-y", `${nextY}px`);
+      if (heroScene && avatar) {
+        const avatarBounds = avatar.getBoundingClientRect();
+        const centerX = avatarBounds.left + avatarBounds.width / 2;
+        const centerY = avatarBounds.top + avatarBounds.height * 0.23;
+        const eyeX = Math.max(-1, Math.min(1, (nextX - centerX) / Math.max(window.innerWidth * 0.32, 1)));
+        const eyeY = Math.max(-1, Math.min(1, (nextY - centerY) / Math.max(window.innerHeight * 0.38, 1)));
+        heroScene.style.setProperty("--eye-x", eyeX.toFixed(3));
+        heroScene.style.setProperty("--eye-y", eyeY.toFixed(3));
+      }
     };
     const moveCursor = (event: PointerEvent) => {
       nextX = event.clientX;
@@ -434,8 +457,8 @@ export default function Portfolio() {
               "-=0.4",
             )
             .from(
-              ".simple-project-door",
-              { y: 12, opacity: 0, duration: 0.48, clearProps: "transform,opacity" },
+              ".simple-desk-object",
+              { opacity: 0, duration: 0.48, stagger: 0.07, clearProps: "opacity" },
               "-=0.3",
             );
 
@@ -716,10 +739,13 @@ export default function Portfolio() {
             <i className="atmosphere-orb orb-one" />
             <i className="atmosphere-orb orb-two" />
             <i className="atmosphere-squiggle">~</i>
+            <i className="atmosphere-pebble pebble-one" />
+            <i className="atmosphere-pebble pebble-two" />
+            <i className="atmosphere-loop" />
           </div>
 
           <div className="simple-hero-intro">
-            <p className="hero-signature">Suyash Pradhan · Product Engineer</p>
+            <p className="hero-signature">Hi, I’m <strong>Suyash</strong> — a product engineer.</p>
             <h1 id="hero-title">
               I make complex products
               <span> clear, useful and alive.</span>
@@ -730,28 +756,52 @@ export default function Portfolio() {
           <div className="simple-hero-avatar">
             <span className="simple-avatar-shadow" aria-hidden="true" />
             <button
-              className="hero-avatar-button"
+              className={`hero-avatar-button ${isGreeting ? "is-greeting" : ""}`}
               type="button"
               onClick={reactToAvatar}
               aria-label="Ask clay Suyash for another thought"
             >
               <img className="avatar-pose pose-neutral" src="/clay/avatar-neutral-v3.webp" alt="Clay Suyash" width="520" height="650" loading="eager" fetchPriority="high" />
               <img className="avatar-pose pose-wave" src="/clay/avatar-wave-v3.webp" alt="" width="520" height="650" loading="eager" />
+              <span className="avatar-eyes" aria-hidden="true">
+                <i className="avatar-eye eye-left"><b /></i>
+                <i className="avatar-eye eye-right"><b /></i>
+              </span>
               <span className="avatar-whisper" aria-live="polite" key={avatarMessage}>
                 {avatarMessages[avatarMessage]}
               </span>
             </button>
           </div>
 
-          <a
-            className="hero-object simple-project-door"
-            href="#projects"
-            onPointerDown={() => playTone("tap")}
-            aria-label="View selected projects"
-          >
-            <img src="/clay/hero-laptop.webp" alt="" width="640" height="480" loading="eager" />
-            <span><small>Selected work</small><b>Open the laptop <i aria-hidden="true">→</i></b></span>
-          </a>
+          <nav className="simple-hero-object-nav" aria-label="Explore Suyash’s portfolio">
+            <a
+              className="hero-object simple-desk-object simple-project-door"
+              href="#projects"
+              onPointerDown={() => playTone("tap")}
+              aria-label="View selected projects"
+            >
+              <img src="/clay/hero-laptop.webp" alt="" width="640" height="480" loading="eager" />
+              <span><small>Selected work</small><b>Open projects <i aria-hidden="true">→</i></b></span>
+            </a>
+            <a
+              className="hero-object simple-desk-object simple-books-door"
+              href="#reading"
+              onPointerDown={() => playTone("tap")}
+              aria-label="See what Suyash is reading"
+            >
+              <img src="/clay/hero-books.webp" alt="" width="560" height="560" loading="eager" />
+              <span><small>Reading shelf</small><b>Open the books <i aria-hidden="true">→</i></b></span>
+            </a>
+            <a
+              className="hero-object simple-desk-object simple-shoe-door"
+              href="#beyond-work"
+              onPointerDown={() => playTone("tap")}
+              aria-label="Explore Suyash’s life beyond work"
+            >
+              <img src="/clay/hero-shoe.webp" alt="" width="620" height="465" loading="eager" />
+              <span><small>Beyond work</small><b>Follow the shoe <i aria-hidden="true">→</i></b></span>
+            </a>
+          </nav>
         </div>
       </section>
 
