@@ -133,7 +133,10 @@ export const projects: Project[] = [
       "The AI never decides legal routes: deterministic rules and a review step keep people in control",
     ],
     stack: ["Next.js", "OpenAI", "Sarvam", "Zod", "PostHog", "Vercel"],
-    links: [{ label: "GitHub", href: gh("sachet-a-ncrp-prototype") }],
+    links: [
+      { label: "Live", href: "https://sachet-ncrp-prototype.vercel.app" },
+      { label: "GitHub", href: gh("sachet-a-ncrp-prototype") },
+    ],
   },
   {
     id: "am-i-underpaid",
@@ -150,7 +153,7 @@ export const projects: Project[] = [
     stack: ["React", "Convex", "Hermes agents", "LinkUp", "PostHog", "Razorpay"],
     links: [
       { label: "Live", href: "https://am-i-underpaid.in" },
-      { label: "Product Hunt", href: "https://www.producthunt.com/@suyash_pradhan7" },
+      { label: "Product Hunt", href: "https://www.producthunt.com/products/am-i-underpaid" },
       { label: "GitHub", href: gh("am-i-underpaid-app") },
     ],
   },
@@ -167,7 +170,10 @@ export const projects: Project[] = [
       "Installable on a phone; audio is processed in memory and never stored",
     ],
     stack: ["Next.js", "Sarvam STT", "Sarvam-30B", "PostHog", "PWA"],
-    links: [{ label: "GitHub", href: gh("satark-app") }],
+    links: [
+      { label: "Live", href: "https://satark-app.vercel.app" },
+      { label: "GitHub", href: gh("satark-app") },
+    ],
   },
   {
     id: "kahaani",
@@ -182,7 +188,10 @@ export const projects: Project[] = [
       "Privacy-first analytics: no names, questions, transcripts or audio ever leave",
     ],
     stack: ["Next.js", "Convex", "Sarvam voice", "PostHog"],
-    links: [{ label: "GitHub", href: gh("kahaani-app") }],
+    links: [
+      { label: "Live", href: "https://kahaani-app-dev.vercel.app" },
+      { label: "GitHub", href: gh("kahaani-app") },
+    ],
   },
   {
     id: "relay",
@@ -196,7 +205,10 @@ export const projects: Project[] = [
       "Runs can be replayed from recorded tool results without another model call",
     ],
     stack: ["Next.js", "OpenAI agents", "Zod", "Drizzle", "PostHog"],
-    links: [{ label: "GitHub", href: gh("relay-an-autonomous-agent") }],
+    links: [
+      { label: "Live", href: "https://relay-an-autonomous-agent.vercel.app" },
+      { label: "GitHub", href: gh("relay-an-autonomous-agent") },
+    ],
   },
 ];
 

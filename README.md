@@ -6,11 +6,11 @@ Product & AI engineer in Bengaluru. Eight years building fintech, identity and S
 
 ## Side projects
 
-- **[Sachet](https://github.com/suyashpradhan/sachet-a-ncrp-prototype)**: report financial cyber fraud by saying what happened. Top 50 of 13,500 in a hackathon with OpenAI and Varun Mayya.
-- **[Am I Underpaid](https://am-i-underpaid.in)**: a free salary check for professionals in India. Launched on [Product Hunt](https://www.producthunt.com/@suyash_pradhan7).
-- **[Satark](https://github.com/suyashpradhan/satark-app)**: a call-safety assistant for Hindi- and Marathi-speaking parents.
-- **[Kahaani](https://github.com/suyashpradhan/kahaani-app)**: keep a grandparent's stories in their own voice.
-- **[Relay](https://github.com/suyashpradhan/relay-an-autonomous-agent)**: an autonomous agent that repairs an overloaded workday.
+- **[Sachet](https://sachet-ncrp-prototype.vercel.app)**: report financial cyber fraud by saying what happened. Top 50 of 13,500 in a hackathon with OpenAI and Varun Mayya. ([code](https://github.com/suyashpradhan/sachet-a-ncrp-prototype))
+- **[Am I Underpaid](https://am-i-underpaid.in)**: a free salary check for professionals in India. Launched on [Product Hunt](https://www.producthunt.com/products/am-i-underpaid). ([code](https://github.com/suyashpradhan/am-i-underpaid-app))
+- **[Satark](https://satark-app.vercel.app)**: a call-safety assistant for Hindi- and Marathi-speaking parents. ([code](https://github.com/suyashpradhan/satark-app))
+- **[Kahaani](https://kahaani-app-dev.vercel.app)**: keep a grandparent's stories in their own voice. ([code](https://github.com/suyashpradhan/kahaani-app))
+- **[Relay](https://relay-an-autonomous-agent.vercel.app)**: an autonomous agent that repairs an overloaded workday. ([code](https://github.com/suyashpradhan/relay-an-autonomous-agent))
 
 ## Elsewhere
 
