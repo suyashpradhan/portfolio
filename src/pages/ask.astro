@@ -1,0 +1,415 @@
+---
+import Base from "../layouts/Base.astro";
+import { site } from "../data/site";
+
+const suggestions = [
+  "What did he build at AiPrise?",
+  "How is he getting into AI engineering?",
+  "What's it like working with him?",
+  "Which technologies does he know best?",
+];
+---
+<Base title="Ask" description="Ask an AI about Suyash Pradhan's work, skills and experience.">
+  <p class="label in" style="--i:0">Ask</p>
+  <h1 class="title in" style="--i:1">Ask about <em>me</em>.</h1>
+  <p class="lede in" style="--i:2">
+    An assistant that has read my résumé and this site. Ask about my work, how I build things,
+    or where I'm heading. It can be wrong, so for anything important,
+    <a class="link" href={`mailto:${site.email}`}>email me</a>.
+  </p>
+
+  <section id="chat" class="chat in" style="--i:3" aria-label="Chat">
+    <div class="log" data-log aria-live="polite"></div>
+
+    <div class="chips" data-chips>
+      {suggestions.map((q) => (
+        <button type="button" class="chip" data-ask={q}>{q}</button>
+      ))}
+    </div>
+
+    <form class="composer" data-form>
+      <label class="sr" for="ask-input">Your question</label>
+      <textarea id="ask-input" name="q" rows="1" maxlength="600" placeholder="Ask anything about my work…" autocomplete="off" required></textarea>
+      <button type="submit" class="send" aria-label="Send">
+        <svg viewBox="0 0 20 20" width="18" height="18" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M10 16V4M5 9l5-5 5 5" /></svg>
+      </button>
+    </form>
+    <p class="meta">
+      <span>Enter to send · Shift+Enter for a new line</span>
+      <button type="button" class="reset" data-reset hidden>Start over</button>
+    </p>
+  </section>
+</Base>
+
+<style>
+  .title {
+    font-size: clamp(2.25rem, 7vw, 3.25rem);
+    font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+  }
+  .title em {
+    color: var(--accent);
+  }
+  .lede {
+    margin-top: 1.5rem;
+    color: var(--muted);
+    max-width: 34rem;
+  }
+  .lede .link {
+    color: var(--ink);
+  }
+  .sr {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+  }
+
+  .chat {
+    margin-top: 2.5rem;
+  }
+
+  .log {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+  }
+  .log:not(:empty) {
+    margin-bottom: 2rem;
+  }
+  .log :global(.msg) {
+    animation: rise 0.5s var(--ease) both;
+  }
+  .log :global(.q) {
+    align-self: flex-end;
+    max-width: 85%;
+    padding: 0.55rem 0.95rem;
+    border-radius: 14px 14px 4px 14px;
+    background: var(--bg-soft);
+    border: 1px solid var(--line);
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .log :global(.a) {
+    position: relative;
+    padding-left: 1.1rem;
+    font-family: var(--serif);
+    font-size: 1.1875rem;
+    line-height: 1.55;
+    font-variation-settings: "SOFT" 100;
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+  .log :global(.a)::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.45em;
+    bottom: 0.35em;
+    width: 2px;
+    border-radius: 2px;
+    background: var(--accent);
+    opacity: 0.6;
+  }
+  .log :global(.a.err) {
+    color: var(--muted);
+  }
+  /* Thinking dots, then a soft caret while the answer streams in. */
+  .log :global(.dots) {
+    display: inline-flex;
+    gap: 5px;
+    padding-top: 0.5em;
+  }
+  .log :global(.dots i) {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: blink 1.1s var(--ease) infinite;
+  }
+  .log :global(.dots i:nth-child(2)) {
+    animation-delay: 0.15s;
+  }
+  .log :global(.dots i:nth-child(3)) {
+    animation-delay: 0.3s;
+  }
+  .log :global(.streaming)::after {
+    content: "";
+    display: inline-block;
+    width: 0.5em;
+    height: 1em;
+    margin-left: 2px;
+    vertical-align: -0.12em;
+    border-radius: 1px;
+    background: var(--accent);
+    animation: blink 0.9s steps(2) infinite;
+  }
+  @keyframes blink {
+    50% {
+      opacity: 0.2;
+    }
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+  }
+  .chips[hidden] {
+    display: none;
+  }
+  .chip {
+    font: inherit;
+    font-size: 0.875rem;
+    color: var(--ink);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.35rem 0.85rem;
+    cursor: pointer;
+    text-align: left;
+    transition: border-color 0.25s, color 0.25s, transform 0.35s var(--ease);
+  }
+  .chip:hover {
+    border-color: var(--accent);
+    color: var(--accent);
+    transform: translateY(-2px);
+  }
+
+  .composer {
+    display: flex;
+    align-items: flex-end;
+    gap: 0.5rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    border: 1px solid var(--line);
+    border-radius: 16px;
+    background: var(--bg);
+    transition: border-color 0.25s, box-shadow 0.25s;
+  }
+  .composer:focus-within {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 14%, transparent);
+  }
+  textarea {
+    flex: 1;
+    min-width: 0;
+    resize: none;
+    border: 0;
+    outline: 0;
+    background: transparent;
+    color: var(--ink);
+    font: inherit;
+    font-size: 1rem;
+    line-height: 1.5;
+    padding: 0.35rem 0;
+    max-height: 10rem;
+    field-sizing: content;
+  }
+  textarea::placeholder {
+    color: var(--muted);
+  }
+  .send {
+    flex: none;
+    display: grid;
+    place-items: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border: 0;
+    border-radius: 50%;
+    background: var(--accent);
+    color: var(--bg);
+    cursor: pointer;
+    transition: transform 0.25s var(--ease), opacity 0.2s;
+  }
+  .send:hover {
+    transform: translateY(-2px);
+  }
+  .send:active {
+    transform: scale(0.92);
+  }
+  .send:disabled {
+    opacity: 0.4;
+    cursor: default;
+    transform: none;
+  }
+  .meta {
+    display: flex;
+    justify-content: space-between;
+    gap: 1rem;
+    margin: 0.6rem 0.25rem 0;
+    font-size: 0.75rem;
+    color: var(--muted);
+  }
+  .reset {
+    font: inherit;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+  .reset:hover {
+    color: var(--accent);
+  }
+  @media (hover: none) {
+    .meta span {
+      visibility: hidden;
+    }
+  }
+</style>
+
+<script>
+  import { play } from "../scripts/sound";
+
+  type Msg = { role: "user" | "assistant"; content: string };
+  const KEY = "ask-history";
+
+  let history: Msg[] = [];
+  let busy = false;
+  let controller: AbortController | null = null;
+
+  const $ = <T extends Element>(sel: string) => document.querySelector<T>(sel);
+
+  function syncSend() {
+    const send = $<HTMLButtonElement>(".send");
+    const input = $<HTMLTextAreaElement>("#ask-input");
+    if (send && input) send.disabled = busy || !input.value.trim();
+  }
+
+  function save() {
+    try {
+      sessionStorage.setItem(KEY, JSON.stringify(history.slice(-20)));
+    } catch {}
+  }
+
+  function bubble(role: Msg["role"], content: string, extra = "") {
+    const el = document.createElement("div");
+    el.className = `msg ${role === "user" ? "q" : "a"} ${extra}`.trim();
+    el.textContent = content; // plain text only, never HTML
+    $("[data-log]")!.append(el);
+    return el;
+  }
+
+  function render() {
+    const log = $("[data-log]");
+    if (!log) return;
+    log.replaceChildren();
+    history.forEach((m) => bubble(m.role, m.content));
+    $<HTMLElement>("[data-chips]")!.hidden = history.length > 0;
+    $<HTMLElement>("[data-reset]")!.hidden = history.length === 0;
+  }
+
+  async function ask(question: string) {
+    question = question.trim().slice(0, 600);
+    if (!question || busy) return;
+    busy = true;
+    play("open");
+
+    const input = $<HTMLTextAreaElement>("#ask-input")!;
+    const send = $<HTMLButtonElement>(".send")!;
+    input.value = "";
+    send.disabled = true;
+    $<HTMLElement>("[data-chips]")!.hidden = true;
+
+    history.push({ role: "user", content: question });
+    bubble("user", question);
+    const answer = bubble("assistant", "");
+    answer.innerHTML = '<span class="dots" aria-label="Thinking"><i></i><i></i><i></i></span>';
+    answer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+
+    let text = "";
+    let ok = false;
+    controller = new AbortController();
+    try {
+      const res = await fetch("/api/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: history }),
+        signal: controller.signal,
+      });
+      if (!res.ok || !res.body) {
+        const msg = (await res.text().catch(() => "")) || "Something went wrong.";
+        throw new Error(res.status === 404 || res.status === 503 ? "The chat isn't switched on yet. Email works, though." : msg);
+      }
+      const reader = res.body.pipeThrough(new TextDecoderStream()).getReader();
+      answer.classList.add("streaming");
+      for (;;) {
+        const { value, done } = await reader.read();
+        if (done) break;
+        text += value;
+        answer.textContent = text;
+      }
+      ok = text.trim().length > 0;
+      if (!ok) throw new Error("No answer came back. Try again?");
+    } catch (err) {
+      if ((err as Error).name === "AbortError") return;
+      answer.classList.add("err");
+      answer.textContent = text || (err as Error).message || "Something went wrong.";
+    } finally {
+      answer.classList.remove("streaming");
+      busy = false;
+      controller = null;
+      syncSend();
+    }
+
+    if (ok) {
+      history.push({ role: "assistant", content: text });
+      play("pop");
+    } else {
+      history.pop(); // don't keep a question that never got an answer
+    }
+    save();
+    $<HTMLElement>("[data-reset]")!.hidden = history.length === 0;
+    if (matchMedia("(hover: hover)").matches) input.focus();
+  }
+
+  // Delegated once; works across page swaps.
+  document.addEventListener("submit", (e) => {
+    const form = (e.target as HTMLElement).closest("[data-form]");
+    if (!form) return;
+    e.preventDefault();
+    ask($<HTMLTextAreaElement>("#ask-input")!.value);
+  });
+
+  document.addEventListener("keydown", (e) => {
+    const t = e.target as HTMLElement;
+    if (t.id !== "ask-input" || e.key !== "Enter" || e.shiftKey || e.isComposing) return;
+    e.preventDefault();
+    ask((t as HTMLTextAreaElement).value);
+  });
+
+  document.addEventListener("click", (e) => {
+    const t = e.target as HTMLElement;
+    const chip = t.closest<HTMLElement>("[data-ask]");
+    if (chip) return void ask(chip.dataset.ask!);
+    if (t.closest("[data-reset]")) {
+      controller?.abort();
+      history = [];
+      save();
+      render();
+      $<HTMLTextAreaElement>("#ask-input")?.focus();
+    }
+  });
+
+  document.addEventListener("astro:page-load", () => {
+    if (!$("#chat")) return;
+    try {
+      history = JSON.parse(sessionStorage.getItem(KEY) || "[]");
+      if (!Array.isArray(history)) history = [];
+    } catch {
+      history = [];
+    }
+    busy = false;
+    render();
+    syncSend();
+  });
+
+  document.addEventListener("input", (e) => {
+    if ((e.target as HTMLElement).id === "ask-input") syncSend();
+  });
+
+  document.addEventListener("astro:before-swap", () => controller?.abort());
+</script>

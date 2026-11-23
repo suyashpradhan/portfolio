@@ -218,7 +218,7 @@ document.addEventListener("astro:page-load", () => {
   root.dataset.sound = soundEnabled() ? "on" : "off";
 
   // Shortcut hints say Ctrl instead of ⌘ off Apple devices.
-  if (!/Mac|iPhone|iPad/.test(navigator.platform || navigator.userAgent)) {
+  if (!/Mac|iPhone|iPad/.test(navigator.userAgent)) {
     document.querySelectorAll("kbd").forEach((k) => {
       if (k.textContent === "⌘") k.textContent = "Ctrl";
     });

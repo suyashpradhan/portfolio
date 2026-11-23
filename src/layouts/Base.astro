@@ -21,6 +21,7 @@ const ogImage = new URL("/og.png", Astro.site);
 const nav = [
   { href: "/work", label: "Work" },
   { href: "/about", label: "About" },
+  { href: "/ask", label: "Ask" },
 ];
 const year = new Date().getFullYear();
 
@@ -96,7 +97,7 @@ const pageOut = {
           <circle cx="16" cy="16" r="15" fill="var(--accent)" />
           <path d="M20.5 11.2c-.9-1.5-2.6-2.4-4.6-2.4-2.6 0-4.4 1.5-4.4 3.5 0 4.6 9.3 2.6 9.3 7.6 0 2.2-2 3.8-4.8 3.8-2.2 0-4-1-5-2.7" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" />
         </svg>
-        <span>{site.name}</span>
+        <span>{site.name.split(" ")[0]}<span class="last"> {site.name.split(" ").slice(1).join(" ")}</span></span>
       </a>
       <nav aria-label="Main">
         {nav.map((n) => (
@@ -240,7 +241,12 @@ const pageOut = {
       height: 2rem;
     }
   }
-  @media (max-width: 359px) {
+  @media (max-width: 419px) {
+    .mark .last {
+      display: none;
+    }
+  }
+  @media (max-width: 339px) {
     .mark span {
       display: none;
     }

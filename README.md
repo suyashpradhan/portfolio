@@ -1,6 +1,6 @@
 # suyashpradhan.com
 
-Personal site. Astro, static output, no UI framework. Deploys to Vercel with zero config.
+Personal site. Astro with no UI framework: every page is static HTML, plus one serverless function for the chat. Deploys to Vercel.
 
 ## Run locally
 
@@ -22,6 +22,22 @@ A social link only appears once its `href` is filled in.
 
 Everything renders without JavaScript; JS only adds the extras.
 
+## "Ask about me" chat
+
+`/ask` streams answers from Claude through one serverless function (`src/pages/api/ask.ts`).
+What it knows comes from `src/data/site.ts` plus the `extra` notes in `src/data/ask.ts`.
+
+To switch it on, add an environment variable in Vercel (**Settings → Environment Variables**), then redeploy:
+
+- `ANTHROPIC_API_KEY`: a key from console.anthropic.com
+- `ASK_MODEL` (optional): defaults to `claude-opus-5-5`; set `claude-haiku-5-5` for a much cheaper bot
+
+Without a key the page still loads and says the chat isn't switched on yet.
+Guard rails: same-origin requests only, 600 characters per question, the last 10 messages kept,
+20 questions per visitor every 10 minutes, and short answers. Also set a monthly spend limit in the Anthropic Console.
+
+To test locally: `ANTHROPIC_API_KEY=... npm run dev`.
+
 ## Deploy
 
-Push to `main`. Vercel builds and deploys it. In Vercel, the framework preset should be **Astro**.
+Push to `main`. Vercel builds and deploys it. `vercel.json` pins the framework (Astro), the build command, and Node 22 comes from `package.json`, so the Vercel project's own preset doesn't matter.
