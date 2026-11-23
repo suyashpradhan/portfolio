@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://suyashpradhan.com/sitemap-index.xml

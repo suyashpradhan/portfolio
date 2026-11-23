@@ -2,9 +2,10 @@
 
 export const site = {
   name: "Suyash Pradhan",
-  title: "Suyash Pradhan — Frontend Engineer",
+  role: "Product & AI Engineer",
+  title: "Suyash Pradhan — Product & AI Engineer",
   description:
-    "Senior frontend engineer in Bengaluru. Eight years building product interfaces, SDKs and the systems behind them.",
+    "Product engineer in Bengaluru. Eight years shipping fintech, identity and SaaS products end to end, now building with AI.",
   location: "Bengaluru, India",
   timeZone: "Asia/Kolkata",
   email: "suyashpradhan07@gmail.com",
@@ -12,7 +13,6 @@ export const site = {
 };
 
 // Links only show up on the site if `href` is filled in.
-// Add your GitHub / X handles here and they'll appear everywhere automatically.
 export const socials: { label: string; href: string }[] = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/suyashpradhan9" },
   { label: "GitHub", href: "https://github.com/suyashpradhan" },
@@ -27,6 +27,7 @@ export type Role = {
   place?: string;
   from: string;
   to: string;
+  summary: string;
   points: string[];
 };
 
@@ -38,10 +39,12 @@ export const roles: Role[] = [
     place: "Bengaluru",
     from: "2024",
     to: "Now",
+    summary: "Rebuilding an enterprise platform end to end: mobile app, data layer and analytics.",
     points: [
-      "Rebuilding an enterprise mobile platform from scratch in React Native, with offline-first sync for crews working with little or no signal.",
+      "Rebuilding the mobile platform from scratch in React Native, with offline sync for crews working with little or no signal.",
       "Designed the GraphQL data layer and cut redundant network calls across the client.",
-      "Built analytics dashboards in React and TypeScript, and write the design docs that come before them.",
+      "Built analytics dashboards in React and TypeScript for enterprise customers.",
+      "Write the technical design docs, run the scrum ceremonies and interview engineers.",
     ],
   },
   {
@@ -49,12 +52,12 @@ export const roles: Role[] = [
     company: "AiPrise",
     note: "YC S22",
     role: "Founding Frontend Engineer",
-    place: "",
     from: "2023",
     to: "2024",
+    summary: "Took an AI-powered identity platform from nothing to 50+ paying customers.",
     points: [
-      "Only frontend engineer on an identity and onboarding platform. Took it from nothing to 50+ customers across the US and Africa.",
-      "Built the Web SDK that lets clients drop onboarding into their own products.",
+      "Only frontend engineer on a B2B identity and onboarding platform, live across the US and Africa and bringing in $40–60K a month.",
+      "Built the Web SDK that lets clients drop onboarding flows into their own products.",
       "Moved every live account onto Auth0 without a minute of downtime.",
     ],
   },
@@ -65,7 +68,9 @@ export const roles: Role[] = [
     place: "Bengaluru",
     from: "2021",
     to: "2023",
+    summary: "Shipped a checkout, identity SDKs and a fraud engine with AI-driven decisions.",
     points: [
+      "Co-built a no-code fraud orchestration platform with AI-driven decision flows, used by risk teams across APAC.",
       "Built BlazeCheckout, a Shopify checkout used by 30+ merchants and handling 1,000+ orders a day.",
       "Shipped the company's first identity SDKs (Liveness Check and DigiLocker Aadhaar), live with three large customers.",
       "Set up the monorepo, took test coverage from zero to 60%, and wired CI/CD with Terraform and GitHub Actions.",
@@ -78,8 +83,9 @@ export const roles: Role[] = [
     place: "Mumbai",
     from: "2020",
     to: "2021",
+    summary: "Cloud analytics dashboards for enterprise and small-business clients.",
     points: [
-      "Turned messy reporting requirements into cloud analytics dashboards for enterprise and small-business clients.",
+      "Turned messy reporting requirements into clean, usable dashboards, from Figma to React.",
     ],
   },
   {
@@ -89,32 +95,29 @@ export const roles: Role[] = [
     place: "Mumbai",
     from: "2017",
     to: "2020",
+    summary: "Early hire at an ed-tech startup. Built the live-class product from scratch.",
     points: [
-      "Early hire at an ed-tech startup for JEE, NEET and CBSE students. Designed and built the live-class dashboard from scratch.",
+      "Designed and built the live-class dashboard for JEE, NEET and CBSE students, front to back in PHP and MySQL.",
     ],
   },
 ];
 
 // Short list on the home page. Each links to its role on /work.
 export const shipped = [
-  { name: "Offline-first field app", detail: "CAI Software", href: "/work#cai" },
-  { name: "AiPrise Web SDK", detail: "50+ customers", href: "/work#aiprise" },
+  { name: "AI identity & onboarding", detail: "AiPrise · 50+ customers", href: "/work#aiprise" },
+  { name: "Fraud engine with AI decisions", detail: "Bureau · APAC", href: "/work#bureau" },
   { name: "BlazeCheckout", detail: "1,000+ orders a day", href: "/work#bureau" },
-  { name: "Liveness & DigiLocker SDKs", detail: "Bureau", href: "/work#bureau" },
+  { name: "Enterprise field platform", detail: "CAI Software", href: "/work#cai" },
 ];
 
-export const toolbox = [
-  "React",
-  "TypeScript",
-  "React Native",
-  "GraphQL",
-  "React Query",
-  "Node.js",
-  "Python",
-  "Auth0",
-  "Jest",
-  "Cypress",
-  "Terraform",
-  "GitHub Actions",
-  "AWS",
+export const now = [
+  { k: "Building", v: "An enterprise field platform at CAI Software" },
+  { k: "Exploring", v: "AI engineering: LLM features, agents, retrieval and evals" },
+  { k: "Based in", v: "Bengaluru, India" },
+];
+
+export const toolbox: { group: string; items: string[] }[] = [
+  { group: "Product", items: ["React", "TypeScript", "React Native", "Tailwind CSS"] },
+  { group: "Systems", items: ["Node.js", "Python", "GraphQL", "React Query", "Auth0"] },
+  { group: "Shipping", items: ["Jest", "Cypress", "Terraform", "GitHub Actions", "AWS"] },
 ];

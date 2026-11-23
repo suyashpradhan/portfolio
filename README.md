@@ -1,6 +1,6 @@
 # suyashpradhan.com
 
-A small static site built with Astro. There's no framework runtime: just HTML, CSS and a few lines of JS.
+Personal site. Astro, static output, no UI framework. Deploys to Vercel with zero config.
 
 ## Run locally
 
@@ -9,13 +9,19 @@ A small static site built with Astro. There's no framework runtime: just HTML, C
 
 ## Edit content
 
-All the text you'd want to change is in `src/data/site.ts`: roles, the "shipped" list, toolbox and social links.
+All the words live in `src/data/site.ts`: roles, the "shipped" list, the Now section, toolbox and social links.
 A social link only appears once its `href` is filled in.
 
-## Deploy to Vercel
+## How it's put together
 
-1. Push this folder to a GitHub repo.
-2. On vercel.com, click **Add New → Project** and import the repo. Vercel detects Astro, so leave every setting at its default.
-3. Under **Settings → Domains**, add `suyashpradhan.com`.
+- `src/layouts/Base.astro`: head and SEO, header, footer, page transitions
+- `src/scripts/app.ts`: all client behaviour (theme, sound, command palette, copy, clock), delegated from `document` so it survives page swaps
+- `src/scripts/sound.ts`: UI sounds synthesised with Web Audio, no audio files
+- `src/components/Palette.astro`: ⌘K / Ctrl+K / `/` command menu
+- `public/og.png`: link-preview image for LinkedIn / X / Slack
 
-Or, from this folder: `npx vercel`.
+Everything renders without JavaScript; JS only adds the extras.
+
+## Deploy
+
+Push to `main`. Vercel builds and deploys it. In Vercel, the framework preset should be **Astro**.

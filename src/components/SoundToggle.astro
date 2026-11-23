@@ -1,0 +1,50 @@
+---
+---
+<button class="icon-btn" type="button" aria-label="Toggle sound" title="Sound on/off" data-action="sound">
+  <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+    <path d="M4 9.5h3l4.5-4v13L7 14.5H4z" fill="currentColor" stroke-width="1.2" />
+    <path class="w1" d="M15 9.5a3.5 3.5 0 0 1 0 5" />
+    <path class="w2" d="M17.5 7a7 7 0 0 1 0 10" />
+    <path class="x" d="M15.5 9.5l5 5M20.5 9.5l-5 5" />
+  </svg>
+</button>
+
+<style>
+  path {
+    transition: opacity 0.3s var(--ease), transform 0.45s var(--ease);
+    transform-origin: 12px 12px;
+  }
+  .w2 {
+    transition-delay: 0.05s;
+  }
+  .x {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  :global([data-sound="off"]) .w1,
+  :global([data-sound="off"]) .w2 {
+    opacity: 0;
+    transform: translateX(-3px);
+  }
+  :global([data-sound="off"]) .x {
+    opacity: 1;
+    transform: none;
+  }
+  /* A gentle pulse on the waves when sound is on and you hover. */
+  @media (hover: hover) {
+    button:hover .w1 {
+      animation: wave 0.9s var(--ease) infinite;
+    }
+    button:hover .w2 {
+      animation: wave 0.9s 0.12s var(--ease) infinite;
+    }
+    :global([data-sound="off"]) button:hover path {
+      animation: none;
+    }
+  }
+  @keyframes wave {
+    50% {
+      transform: translateX(1.5px);
+    }
+  }
+</style>

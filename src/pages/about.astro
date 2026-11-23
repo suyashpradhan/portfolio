@@ -2,37 +2,58 @@
 import Base from "../layouts/Base.astro";
 import Arrow from "../components/Arrow.astro";
 import CopyEmail from "../components/CopyEmail.astro";
-import { site, socials, toolbox } from "../data/site";
+import { now, site, socials, toolbox } from "../data/site";
 ---
-<Base title="About" description="About Suyash Pradhan, a senior frontend engineer in Bengaluru.">
+<Base title="About" description="About Suyash Pradhan, a product and AI engineer in Bengaluru.">
   <p class="label in" style="--i:0">About</p>
   <h1 class="title in" style="--i:1">Hi, I'm Suyash.</h1>
 
   <div class="prose in" style="--i:2">
     <p>
-      I started out in 2017 at a tiny ed-tech company in Mumbai, writing PHP and building the
-      dashboard students used for live classes. I've been building things people click on ever since.
+      I started in 2017 at a tiny ed-tech company in Mumbai, writing PHP and building the
+      dashboard students used for live classes. I've been shipping things people use ever since.
     </p>
     <p>
-      Most of my work has been at early startups, often as the first frontend hire. That has meant
-      identity SDKs that enterprises embed, a checkout that handles a thousand orders a day, and
-      the less visible work: auth migrations, CI pipelines, test suites.
+      Most of my career has been at early startups, usually as one of the first engineers. That
+      means owning whatever is in front of you: identity SDKs that enterprises embed, a checkout
+      handling a thousand orders a day, a fraud engine with AI-driven decisions, auth migrations,
+      CI pipelines, test suites.
     </p>
     <p>
-      These days I'm in Bengaluru, working on a React Native app that has to keep working
-      when the network doesn't. I care about interfaces that feel quick, code the next person
-      can read, and shipping.
+      I don't think of myself as only a frontend engineer anymore. I care about the whole
+      product: what it should do, how it's built, and whether people actually use it. More and
+      more, that includes AI, so that's where my time goes now: building with LLMs, agents and
+      retrieval, and learning how to make them reliable enough to ship.
     </p>
   </div>
 
-  <section class="section in" style="--i:3" aria-labelledby="tools">
-    <h2 id="tools" class="label">What I usually reach for</h2>
-    <ul class="tools">
-      {toolbox.map((t) => <li>{t}</li>)}
-    </ul>
+  <section class="section in" style="--i:3" aria-labelledby="now">
+    <h2 id="now" class="label"><span class="live" aria-hidden="true"></span>Now</h2>
+    <dl class="now">
+      {now.map((n) => (
+        <div>
+          <dt>{n.k}</dt>
+          <dd>{n.v}</dd>
+        </div>
+      ))}
+    </dl>
   </section>
 
-  <section class="section in" style="--i:4" aria-labelledby="elsewhere">
+  <section class="section in" style="--i:4" aria-labelledby="tools">
+    <h2 id="tools" class="label">What I usually reach for</h2>
+    <div class="groups">
+      {toolbox.map((g) => (
+        <div class="group">
+          <p class="gname">{g.group}</p>
+          <ul class="tools">
+            {g.items.map((t) => <li>{t}</li>)}
+          </ul>
+        </div>
+      ))}
+    </div>
+  </section>
+
+  <section class="section in" style="--i:5" aria-labelledby="elsewhere">
     <h2 id="elsewhere" class="label">Elsewhere</h2>
     <ul class="links">
       {socials.map((s) => (
@@ -43,7 +64,7 @@ import { site, socials, toolbox } from "../data/site";
     <div class="mail"><CopyEmail /></div>
   </section>
 
-  <p class="edu in" style="--i:5">B.Sc., Mumbai University, 2017</p>
+  <p class="edu in" style="--i:6">B.Sc., Mumbai University, 2017</p>
 </Base>
 
 <style>
@@ -56,6 +77,84 @@ import { site, socials, toolbox } from "../data/site";
     max-width: 34rem;
   }
 
+  /* A small pulsing dot: this section is current. */
+  .live {
+    position: relative;
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    margin-right: 0.55rem;
+    vertical-align: 0.1em;
+    border-radius: 50%;
+    background: var(--accent);
+  }
+  .live::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: ping 2.4s var(--ease) infinite;
+  }
+  @keyframes ping {
+    0% {
+      transform: scale(1);
+      opacity: 0.6;
+    }
+    70%,
+    100% {
+      transform: scale(3.2);
+      opacity: 0;
+    }
+  }
+
+  .now {
+    margin: 0;
+    border-top: 1px solid var(--line);
+  }
+  .now div {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1.5rem;
+    padding-block: 0.8rem;
+    border-bottom: 1px solid var(--line);
+  }
+  .now dt {
+    color: var(--muted);
+    font-size: 0.875rem;
+    padding-top: 0.15rem;
+  }
+  .now dd {
+    margin: 0;
+  }
+  @media (max-width: 480px) {
+    .now div {
+      grid-template-columns: 1fr;
+      gap: 0.1rem;
+    }
+  }
+
+  .groups {
+    display: grid;
+    gap: 1.25rem;
+  }
+  .group {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1.5rem;
+    align-items: baseline;
+  }
+  .gname {
+    margin: 0;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+  @media (max-width: 480px) {
+    .group {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+  }
   .tools {
     display: flex;
     flex-wrap: wrap;

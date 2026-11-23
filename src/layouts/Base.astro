@@ -3,6 +3,8 @@ import { ClientRouter, fade } from "astro:transitions";
 import "../styles/global.css";
 import { site, socials } from "../data/site";
 import ThemeToggle from "../components/ThemeToggle.astro";
+import SoundToggle from "../components/SoundToggle.astro";
+import Palette from "../components/Palette.astro";
 import LocalTime from "../components/LocalTime.astro";
 import Arrow from "../components/Arrow.astro";
 
@@ -14,41 +16,69 @@ const { title, description = site.description } = Astro.props;
 const fullTitle = title ? `${title} — ${site.name}` : site.title;
 const path = Astro.url.pathname.replace(/\/$/, "") || "/";
 const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL("/og.png", Astro.site);
 
 const nav = [
   { href: "/work", label: "Work" },
   { href: "/about", label: "About" },
 ];
 const year = new Date().getFullYear();
+
+// Leaving a page: content lifts away. The new page brings itself in (see .in in global.css).
+const pageOut = {
+  forwards: {
+    old: { name: "page-out-up", duration: "0.24s", easing: "cubic-bezier(.4,0,1,1)", fillMode: "both" },
+    new: { name: "page-hold", duration: "0.24s", fillMode: "both" },
+  },
+  backwards: {
+    old: { name: "page-out-down", duration: "0.24s", easing: "cubic-bezier(.4,0,1,1)", fillMode: "both" },
+    new: { name: "page-hold", duration: "0.24s", fillMode: "both" },
+  },
+};
 ---
 <!doctype html>
 <html lang="en" transition:animate={fade({ duration: "0.22s" })}>
   <head>
     <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
     <title>{fullTitle}</title>
     <meta name="description" content={description} />
     <link rel="canonical" href={canonical} />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
     <meta name="theme-color" content="#f6f0e6" />
+    <meta name="author" content={site.name} />
 
     <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={site.name} />
     <meta property="og:title" content={fullTitle} />
     <meta property="og:description" content={description} />
     <meta property="og:url" content={canonical} />
-    <meta name="twitter:card" content="summary" />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={`${site.name}, ${site.role}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:image" content={ogImage} />
 
-    <!-- Pick the theme before first paint so there's no flash. -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      "@context": "https://schema.org",
+      "@type": "Person",
+      name: site.name,
+      jobTitle: site.role,
+      url: Astro.site?.toString(),
+      address: { "@type": "PostalAddress", addressLocality: "Bengaluru", addressCountry: "IN" },
+      sameAs: socials.map((s) => s.href),
+    })} />
+
+    <!-- Pick theme and sound before first paint, so nothing flashes. -->
     <script is:inline>
       (() => {
-        const pick = () => {
-          let t = null;
-          try { t = localStorage.getItem("theme"); } catch {}
-          return t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
-        };
+        const get = (k) => { try { return localStorage.getItem(k); } catch { return null; } };
         const apply = (doc) => {
-          const t = pick();
+          const t = get("theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
           doc.documentElement.dataset.theme = t;
+          doc.documentElement.dataset.sound = get("sound") === "off" ? "off" : "on";
           doc.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "dark" ? "#1c1814" : "#f6f0e6");
         };
         apply(document);
@@ -60,7 +90,7 @@ const year = new Date().getFullYear();
   <body>
     <a class="skip" href="#content">Skip to content</a>
 
-    <header class="wrap top">
+    <header class="wrap top" transition:name="site-header" transition:animate="none">
       <a href="/" class="mark" aria-label="Home">
         <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
           <circle cx="16" cy="16" r="15" fill="var(--accent)" />
@@ -70,13 +100,25 @@ const year = new Date().getFullYear();
       </a>
       <nav aria-label="Main">
         {nav.map((n) => (
-          <a href={n.href} aria-current={path === n.href ? "page" : undefined}>{n.label}</a>
+          <a href={n.href} aria-current={path === n.href ? "page" : undefined}>
+            {n.label}
+            {path === n.href && <span class="dot" transition:name="nav-dot" aria-hidden="true"></span>}
+          </a>
         ))}
-        <ThemeToggle />
+        <span class="tools">
+          <button class="icon-btn cmdk" type="button" data-action="palette" aria-label="Open command menu" title="Command menu (⌘K)">
+            <svg viewBox="0 0 24 24" width="19" height="19" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" aria-hidden="true">
+              <path d="M9 6.5V17.5M15 6.5V17.5M6.5 9H17.5M6.5 15H17.5" />
+              <path d="M9 6.5a2.5 2.5 0 1 0-2.5 2.5M15 6.5a2.5 2.5 0 1 1 2.5 2.5M9 17.5a2.5 2.5 0 1 1-2.5-2.5M15 17.5a2.5 2.5 0 1 0 2.5-2.5" />
+            </svg>
+          </button>
+          <SoundToggle />
+          <ThemeToggle />
+        </span>
       </nav>
     </header>
 
-    <main id="content" class="wrap">
+    <main id="content" class="wrap" transition:name="page" transition:animate={pageOut}>
       <slot />
     </main>
 
@@ -89,12 +131,19 @@ const year = new Date().getFullYear();
           <li><a class="link" href={`mailto:${site.email}`}>Email</a></li>
           <li><a class="link" href={site.resume} target="_blank">Résumé<Arrow /></a></li>
         </ul>
+        <button class="hint" type="button" data-action="palette">Press <kbd>⌘</kbd><kbd>K</kbd> for shortcuts</button>
       </div>
       <div class="row small">
         <span>© {year} {site.name}</span>
         <LocalTime />
       </div>
     </footer>
+
+    <Palette />
+
+    <script>
+      import "../scripts/app.ts";
+    </script>
   </body>
 </html>
 
@@ -117,7 +166,7 @@ const year = new Date().getFullYear();
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding-top: 1.5rem;
+    padding-top: max(1.5rem, env(safe-area-inset-top));
     gap: 1rem;
   }
   .mark {
@@ -128,6 +177,7 @@ const year = new Date().getFullYear();
     font-size: 0.9375rem;
   }
   .mark svg {
+    flex: none;
     transition: transform 0.7s var(--ease);
   }
   .mark:hover svg {
@@ -140,50 +190,71 @@ const year = new Date().getFullYear();
   nav {
     display: flex;
     align-items: center;
-    gap: clamp(0.75rem, 3vw, 1.5rem);
+    gap: clamp(0.85rem, 3vw, 1.5rem);
     font-size: 0.9375rem;
   }
-  nav a {
+  nav > a {
     position: relative;
     color: var(--muted);
     padding-block: 0.25rem;
     transition: color 0.2s;
   }
-  nav a:hover,
-  nav a[aria-current="page"] {
+  nav > a:hover,
+  nav > a[aria-current="page"] {
     color: var(--ink);
   }
-  /* Small dot under the current page */
-  nav a::after {
-    content: "";
+  /* The dot under the current page. It glides between links on navigation. */
+  .dot {
     position: absolute;
     left: 50%;
     bottom: -0.3rem;
     width: 4px;
     height: 4px;
+    margin-left: -2px;
     border-radius: 50%;
     background: var(--accent);
-    transform: translateX(-50%) scale(0);
-    transition: transform 0.35s var(--ease);
   }
-  nav a[aria-current="page"]::after {
-    transform: translateX(-50%) scale(1);
+  .tools {
+    display: flex;
+    align-items: center;
+    gap: 0.1rem;
+    margin-right: -0.5rem;
   }
 
-  @media (max-width: 380px) {
+  @media (max-width: 560px), (hover: none) {
+    .cmdk,
+    .hint {
+      display: none;
+    }
+  }
+  @media (max-width: 560px) {
+    nav {
+      gap: 0.75rem;
+    }
+    .tools {
+      gap: 0;
+      margin-right: -0.35rem;
+    }
+    .tools :global(.icon-btn) {
+      width: 2rem;
+      height: 2rem;
+    }
+  }
+  @media (max-width: 359px) {
     .mark span {
       display: none;
     }
   }
 
   .foot {
-    padding-bottom: 2.5rem;
+    padding-bottom: max(2.5rem, env(safe-area-inset-bottom));
     color: var(--muted);
     font-size: 0.9375rem;
   }
   .foot .row {
     display: flex;
     flex-wrap: wrap;
+    align-items: baseline;
     justify-content: space-between;
     gap: 0.5rem 1.5rem;
     padding-top: 1.25rem;
@@ -203,5 +274,27 @@ const year = new Date().getFullYear();
     list-style: none;
     margin: 0;
     padding: 0;
+  }
+  .hint {
+    font: inherit;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    background: none;
+    border: 0;
+    padding: 0;
+    cursor: pointer;
+    transition: color 0.2s;
+  }
+  .hint:hover {
+    color: var(--ink);
+  }
+  kbd {
+    font-family: var(--sans);
+    font-size: 0.6875rem;
+    padding: 0.05rem 0.3rem;
+    margin-inline: 0.1rem;
+    border: 1px solid var(--line);
+    border-bottom-width: 2px;
+    border-radius: 4px;
   }
 </style>

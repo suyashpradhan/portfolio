@@ -1,6 +1,6 @@
 ---
 ---
-<button class="toggle" type="button" aria-label="Switch colour theme" title="Switch theme" data-theme-toggle>
+<button class="icon-btn" type="button" aria-label="Switch colour theme" title="Switch theme" data-action="theme">
   <svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true">
     <mask id="moon-cut">
       <rect width="24" height="24" fill="white" />
@@ -14,23 +14,6 @@
 </button>
 
 <style>
-  .toggle {
-    display: grid;
-    place-items: center;
-    width: 2.25rem;
-    height: 2.25rem;
-    margin-right: -0.5rem;
-    border: 0;
-    border-radius: 50%;
-    background: transparent;
-    color: var(--ink);
-    cursor: pointer;
-    transition: background-color 0.25s, color 0.25s;
-  }
-  .toggle:hover {
-    background: var(--bg-soft);
-    color: var(--accent);
-  }
   svg * {
     transition: transform 0.6s var(--ease), opacity 0.4s var(--ease);
     transform-origin: 12px 12px;
@@ -51,40 +34,3 @@
   }
 </style>
 
-<script>
-  function setTheme(next: string) {
-    document.documentElement.dataset.theme = next;
-    try { localStorage.setItem("theme", next); } catch {}
-    const meta = document.querySelector('meta[name="theme-color"]');
-    meta?.setAttribute("content", next === "dark" ? "#1c1814" : "#f6f0e6");
-  }
-
-  function onClick(e: MouseEvent) {
-    const btn = e.currentTarget as HTMLElement;
-    const next = document.documentElement.dataset.theme === "dark" ? "light" : "dark";
-    const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
-
-    if (!document.startViewTransition || reduce) return setTheme(next);
-
-    // Grow the new theme out of the button as a circle.
-    const r = btn.getBoundingClientRect();
-    const x = r.left + r.width / 2;
-    const y = r.top + r.height / 2;
-    const end = Math.hypot(Math.max(x, innerWidth - x), Math.max(y, innerHeight - y));
-    const root = document.documentElement;
-
-    root.classList.add("theme-vt");
-    const vt = document.startViewTransition(() => setTheme(next));
-    vt.ready.then(() => {
-      root.animate(
-        { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${end}px at ${x}px ${y}px)`] },
-        { duration: 650, easing: "cubic-bezier(.2,.7,.2,1)", pseudoElement: "::view-transition-new(root)" },
-      );
-    });
-    vt.finished.finally(() => root.classList.remove("theme-vt"));
-  }
-
-  document.addEventListener("astro:page-load", () => {
-    document.querySelectorAll<HTMLElement>("[data-theme-toggle]").forEach((b) => b.addEventListener("click", onClick));
-  });
-</script>

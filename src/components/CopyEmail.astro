@@ -3,7 +3,7 @@ import { site } from "../data/site";
 ---
 <span class="email">
   <a class="link" href={`mailto:${site.email}`}>{site.email}</a>
-  <button type="button" class="copy" data-copy={site.email} aria-label="Copy email address">
+  <button type="button" class="copy" data-action="copy" data-copy={site.email} aria-label="Copy email address">
     <span class="t idle">Copy</span>
     <span class="t done" aria-hidden="true">Copied</span>
   </button>
@@ -56,22 +56,3 @@ import { site } from "../data/site";
   }
 </style>
 
-<script>
-  document.addEventListener("astro:page-load", () => {
-    document.querySelectorAll<HTMLButtonElement>("[data-copy]").forEach((btn) => {
-      btn.addEventListener("click", async () => {
-        try {
-          await navigator.clipboard.writeText(btn.dataset.copy!);
-        } catch {
-          return;
-        }
-        btn.setAttribute("data-copied", "");
-        btn.setAttribute("aria-label", "Copied");
-        setTimeout(() => {
-          btn.removeAttribute("data-copied");
-          btn.setAttribute("aria-label", "Copy email address");
-        }, 1600);
-      });
-    });
-  });
-</script>
