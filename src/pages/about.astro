@@ -1,0 +1,98 @@
+---
+import Base from "../layouts/Base.astro";
+import Arrow from "../components/Arrow.astro";
+import CopyEmail from "../components/CopyEmail.astro";
+import { site, socials, toolbox } from "../data/site";
+---
+<Base title="About" description="About Suyash Pradhan, a senior frontend engineer in Bengaluru.">
+  <p class="label in" style="--i:0">About</p>
+  <h1 class="title in" style="--i:1">Hi, I'm Suyash.</h1>
+
+  <div class="prose in" style="--i:2">
+    <p>
+      I started out in 2017 at a tiny ed-tech company in Mumbai, writing PHP and building the
+      dashboard students used for live classes. I've been building things people click on ever since.
+    </p>
+    <p>
+      Most of my work has been at early startups, often as the first frontend hire. That has meant
+      identity SDKs that enterprises embed, a checkout that handles a thousand orders a day, and
+      the less visible work: auth migrations, CI pipelines, test suites.
+    </p>
+    <p>
+      These days I'm in Bengaluru, working on a React Native app that has to keep working
+      when the network doesn't. I care about interfaces that feel quick, code the next person
+      can read, and shipping.
+    </p>
+  </div>
+
+  <section class="section in" style="--i:3" aria-labelledby="tools">
+    <h2 id="tools" class="label">What I usually reach for</h2>
+    <ul class="tools">
+      {toolbox.map((t) => <li>{t}</li>)}
+    </ul>
+  </section>
+
+  <section class="section in" style="--i:4" aria-labelledby="elsewhere">
+    <h2 id="elsewhere" class="label">Elsewhere</h2>
+    <ul class="links">
+      {socials.map((s) => (
+        <li><a class="link" href={s.href} target="_blank" rel="noopener noreferrer">{s.label}<Arrow /></a></li>
+      ))}
+      <li><a class="link" href={site.resume} target="_blank">Résumé (PDF)<Arrow /></a></li>
+    </ul>
+    <div class="mail"><CopyEmail /></div>
+  </section>
+
+  <p class="edu in" style="--i:5">B.Sc., Mumbai University, 2017</p>
+</Base>
+
+<style>
+  .title {
+    font-size: clamp(2.25rem, 7vw, 3.25rem);
+    font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+  }
+  .prose {
+    margin-top: 2rem;
+    max-width: 34rem;
+  }
+
+  .tools {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+  .tools li {
+    font-size: 0.875rem;
+    padding: 0.25rem 0.75rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    transition: border-color 0.25s, color 0.25s, transform 0.35s var(--ease);
+  }
+  @media (hover: hover) {
+    .tools li:hover {
+      border-color: var(--accent);
+      color: var(--accent);
+      transform: translateY(-2px);
+    }
+  }
+
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.75rem;
+    list-style: none;
+    margin: 0 0 1rem;
+    padding: 0;
+  }
+  .mail {
+    margin-top: 0.5rem;
+  }
+  .edu {
+    margin-top: 4rem;
+    font-size: 0.875rem;
+    color: var(--muted);
+  }
+</style>

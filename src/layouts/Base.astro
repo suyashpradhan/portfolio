@@ -1,0 +1,207 @@
+---
+import { ClientRouter, fade } from "astro:transitions";
+import "../styles/global.css";
+import { site, socials } from "../data/site";
+import ThemeToggle from "../components/ThemeToggle.astro";
+import LocalTime from "../components/LocalTime.astro";
+import Arrow from "../components/Arrow.astro";
+
+interface Props {
+  title?: string;
+  description?: string;
+}
+const { title, description = site.description } = Astro.props;
+const fullTitle = title ? `${title} — ${site.name}` : site.title;
+const path = Astro.url.pathname.replace(/\/$/, "") || "/";
+const canonical = new URL(Astro.url.pathname, Astro.site);
+
+const nav = [
+  { href: "/work", label: "Work" },
+  { href: "/about", label: "About" },
+];
+const year = new Date().getFullYear();
+---
+<!doctype html>
+<html lang="en" transition:animate={fade({ duration: "0.22s" })}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonical} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta name="theme-color" content="#f6f0e6" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary" />
+
+    <!-- Pick the theme before first paint so there's no flash. -->
+    <script is:inline>
+      (() => {
+        const pick = () => {
+          let t = null;
+          try { t = localStorage.getItem("theme"); } catch {}
+          return t || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");
+        };
+        const apply = (doc) => {
+          const t = pick();
+          doc.documentElement.dataset.theme = t;
+          doc.querySelector('meta[name="theme-color"]')?.setAttribute("content", t === "dark" ? "#1c1814" : "#f6f0e6");
+        };
+        apply(document);
+        document.addEventListener("astro:before-swap", (e) => apply(e.newDocument));
+      })();
+    </script>
+    <ClientRouter />
+  </head>
+  <body>
+    <a class="skip" href="#content">Skip to content</a>
+
+    <header class="wrap top">
+      <a href="/" class="mark" aria-label="Home">
+        <svg viewBox="0 0 32 32" width="28" height="28" aria-hidden="true">
+          <circle cx="16" cy="16" r="15" fill="var(--accent)" />
+          <path d="M20.5 11.2c-.9-1.5-2.6-2.4-4.6-2.4-2.6 0-4.4 1.5-4.4 3.5 0 4.6 9.3 2.6 9.3 7.6 0 2.2-2 3.8-4.8 3.8-2.2 0-4-1-5-2.7" fill="none" stroke="var(--bg)" stroke-width="2.2" stroke-linecap="round" />
+        </svg>
+        <span>{site.name}</span>
+      </a>
+      <nav aria-label="Main">
+        {nav.map((n) => (
+          <a href={n.href} aria-current={path === n.href ? "page" : undefined}>{n.label}</a>
+        ))}
+        <ThemeToggle />
+      </nav>
+    </header>
+
+    <main id="content" class="wrap">
+      <slot />
+    </main>
+
+    <footer class="wrap foot">
+      <div class="row">
+        <ul class="socials">
+          {socials.map((s) => (
+            <li><a class="link" href={s.href} target="_blank" rel="noopener noreferrer">{s.label}<Arrow /></a></li>
+          ))}
+          <li><a class="link" href={`mailto:${site.email}`}>Email</a></li>
+          <li><a class="link" href={site.resume} target="_blank">Résumé<Arrow /></a></li>
+        </ul>
+      </div>
+      <div class="row small">
+        <span>© {year} {site.name}</span>
+        <LocalTime />
+      </div>
+    </footer>
+  </body>
+</html>
+
+<style>
+  .skip {
+    position: absolute;
+    left: -999px;
+    top: 0.5rem;
+    background: var(--ink);
+    color: var(--bg);
+    padding: 0.4rem 0.8rem;
+    border-radius: 6px;
+    z-index: 200;
+  }
+  .skip:focus {
+    left: 0.5rem;
+  }
+
+  .top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding-top: 1.5rem;
+    gap: 1rem;
+  }
+  .mark {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.6rem;
+    font-weight: 500;
+    font-size: 0.9375rem;
+  }
+  .mark svg {
+    transition: transform 0.7s var(--ease);
+  }
+  .mark:hover svg {
+    transform: rotate(-20deg) scale(1.06);
+  }
+  .mark span {
+    white-space: nowrap;
+  }
+
+  nav {
+    display: flex;
+    align-items: center;
+    gap: clamp(0.75rem, 3vw, 1.5rem);
+    font-size: 0.9375rem;
+  }
+  nav a {
+    position: relative;
+    color: var(--muted);
+    padding-block: 0.25rem;
+    transition: color 0.2s;
+  }
+  nav a:hover,
+  nav a[aria-current="page"] {
+    color: var(--ink);
+  }
+  /* Small dot under the current page */
+  nav a::after {
+    content: "";
+    position: absolute;
+    left: 50%;
+    bottom: -0.3rem;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    background: var(--accent);
+    transform: translateX(-50%) scale(0);
+    transition: transform 0.35s var(--ease);
+  }
+  nav a[aria-current="page"]::after {
+    transform: translateX(-50%) scale(1);
+  }
+
+  @media (max-width: 380px) {
+    .mark span {
+      display: none;
+    }
+  }
+
+  .foot {
+    padding-bottom: 2.5rem;
+    color: var(--muted);
+    font-size: 0.9375rem;
+  }
+  .foot .row {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 0.5rem 1.5rem;
+    padding-top: 1.25rem;
+    border-top: 1px solid var(--line);
+  }
+  .foot .row + .row {
+    border-top: 0;
+    padding-top: 1rem;
+  }
+  .small {
+    font-size: 0.8125rem;
+  }
+  .socials {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem 1.5rem;
+    list-style: none;
+    margin: 0;
+    padding: 0;
+  }
+</style>

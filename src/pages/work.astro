@@ -1,0 +1,147 @@
+---
+import Base from "../layouts/Base.astro";
+import Arrow from "../components/Arrow.astro";
+import { roles, site } from "../data/site";
+---
+<Base title="Work" description="Where Suyash Pradhan has worked: CAI Software, AiPrise (YC S22), Bureau and more.">
+  <p class="label in" style="--i:0">Work</p>
+  <h1 class="title in" style="--i:1">Eight years, five teams, mostly <em>day one</em>.</h1>
+  <p class="lede in" style="--i:2">
+    I like being early: picking the stack, building the first SDK, setting up the tests nobody
+    has time for yet. Here's the short version.
+  </p>
+
+  <ol class="roles">
+    {roles.map((r, i) => (
+      <li id={r.id} class="role in" style={`--i:${i + 3}`}>
+        <p class="years">
+          <span>{r.from}</span><span class="dash" aria-hidden="true"></span><span>{r.to}</span>
+        </p>
+        <div class="body">
+          <h2>
+            {r.company}
+            {r.note && <span class="note">{r.note}</span>}
+          </h2>
+          <p class="meta">{r.role}{r.place && ` · ${r.place}`}</p>
+          <ul>
+            {r.points.map((p) => <li>{p}</li>)}
+          </ul>
+        </div>
+      </li>
+    ))}
+  </ol>
+
+  <p class="more reveal">
+    <a class="link" href={site.resume} target="_blank">Full résumé (PDF)<Arrow /></a>
+  </p>
+</Base>
+
+<style>
+  .title {
+    font-size: clamp(2rem, 6vw, 2.875rem);
+    max-width: 18ch;
+    text-wrap: balance;
+  }
+  .title em {
+    color: var(--accent);
+  }
+  .lede {
+    margin-top: 1.5rem;
+    color: var(--muted);
+    max-width: 34rem;
+  }
+
+  .roles {
+    list-style: none;
+    margin: 3.5rem 0 0;
+    padding: 0;
+  }
+  .role {
+    display: grid;
+    grid-template-columns: 6.5rem 1fr;
+    gap: 1.5rem;
+    padding-block: 1.75rem;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 1.5rem;
+  }
+  .role:target h2 {
+    color: var(--accent);
+  }
+  .years {
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    margin: 0.35rem 0 0;
+    font-size: 0.8125rem;
+    color: var(--muted);
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+  }
+  .dash {
+    width: 0.75rem;
+    height: 1px;
+    background: currentColor;
+    transition: width 0.45s var(--ease), background-color 0.2s;
+  }
+  @media (hover: hover) {
+    .role:hover .dash {
+      width: 1.4rem;
+      background: var(--accent);
+    }
+  }
+
+  h2 {
+    font-size: 1.5rem;
+    font-variation-settings: "SOFT" 100, "opsz" 72;
+    transition: color 0.3s;
+  }
+  .note {
+    font-family: var(--sans);
+    font-size: 0.75rem;
+    letter-spacing: 0.02em;
+    color: var(--muted);
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    padding: 0.1rem 0.5rem;
+    margin-left: 0.5rem;
+    vertical-align: 0.3em;
+  }
+  .meta {
+    margin: 0.3rem 0 0.9rem;
+    font-size: 0.9375rem;
+    color: var(--muted);
+  }
+  .body ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+  .body li {
+    position: relative;
+    padding-left: 1.1rem;
+    margin-bottom: 0.55rem;
+  }
+  .body li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.75em;
+    width: 0.4rem;
+    height: 1px;
+    background: var(--accent);
+  }
+
+  @media (max-width: 560px) {
+    .role {
+      grid-template-columns: 1fr;
+      gap: 0.5rem;
+    }
+    .years {
+      margin: 0;
+    }
+  }
+
+  .more {
+    margin-top: 2.5rem;
+  }
+</style>

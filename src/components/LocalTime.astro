@@ -1,0 +1,24 @@
+---
+import { site } from "../data/site";
+---
+<span class="time" data-tz={site.timeZone}><span data-clock>&nbsp;</span> in {site.location.split(",")[0]}</span>
+
+<style>
+  .time {
+    font-variant-numeric: tabular-nums;
+  }
+</style>
+
+<script>
+  let timer: number | undefined;
+  document.addEventListener("astro:page-load", () => {
+    clearInterval(timer);
+    const host = document.querySelector<HTMLElement>("[data-tz]");
+    const out = host?.querySelector<HTMLElement>("[data-clock]");
+    if (!host || !out) return;
+    const fmt = new Intl.DateTimeFormat("en-GB", { hour: "2-digit", minute: "2-digit", hour12: false, timeZone: host.dataset.tz });
+    const tick = () => (out.textContent = fmt.format(new Date()));
+    tick();
+    timer = window.setInterval(tick, 15_000);
+  });
+</script>
