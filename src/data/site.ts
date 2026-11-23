@@ -15,7 +15,7 @@ export const site = {
 // Add your GitHub / X handles here and they'll appear everywhere automatically.
 export const socials: { label: string; href: string }[] = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/suyashpradhan9" },
-  { label: "GitHub", href: "" }, // e.g. "https://github.com/your-handle"
+  { label: "GitHub", href: "https://github.com/suyashpradhan" },
   { label: "X", href: "" }, // e.g. "https://x.com/your-handle"
 ].filter((s) => s.href);
 
