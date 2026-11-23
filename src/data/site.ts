@@ -16,6 +16,7 @@ export const site = {
 export const socials: { label: string; href: string }[] = [
   { label: "LinkedIn", href: "https://www.linkedin.com/in/suyashpradhan9" },
   { label: "GitHub", href: "https://github.com/suyashpradhan" },
+  { label: "Product Hunt", href: "https://www.producthunt.com/@suyash_pradhan7" },
   { label: "X", href: "" }, // e.g. "https://x.com/your-handle"
 ].filter((s) => s.href);
 
@@ -102,6 +103,103 @@ export const roles: Role[] = [
   },
 ];
 
+export type Project = {
+  id: string;
+  name: string;
+  native?: string; // name in Devanagari, shown small next to the title
+  badge?: string;
+  pitch: string; // one line, shown on cards
+  about: string; // a short paragraph, shown on /projects
+  how: string[];
+  stack: string[];
+  links: { label: string; href: string }[];
+};
+
+const gh = (repo: string) => `https://github.com/suyashpradhan/${repo}`;
+
+// Side projects, in the order they're shown. The first one is featured.
+export const projects: Project[] = [
+  {
+    id: "sachet",
+    name: "Sachet",
+    native: "सचेत",
+    badge: "Top 50 of 13,500 · OpenAI × Varun Mayya hackathon",
+    pitch: "Report financial cyber fraud by simply saying what happened.",
+    about:
+      "A prototype of a calmer way to report cyber fraud to India's NCRP. Speak, type or upload screenshots; AI prepares the complaint, and the citizen reviews every field before it's submitted. English and Hindi.",
+    how: [
+      "Live voice transcription with Sarvam, evidence-grounded extraction with the OpenAI Responses API",
+      "Every AI draft is validated with Zod, then mapped to an NCRP-compatible complaint",
+      "The AI never decides legal routes: deterministic rules and a review step keep people in control",
+    ],
+    stack: ["Next.js", "OpenAI", "Sarvam", "Zod", "PostHog", "Vercel"],
+    links: [{ label: "GitHub", href: gh("sachet-a-ncrp-prototype") }],
+  },
+  {
+    id: "am-i-underpaid",
+    name: "Am I Underpaid",
+    badge: "Launched on Product Hunt · Hundreds of users",
+    pitch: "A free salary check for professionals in India.",
+    about:
+      "Describe your role, experience, company and pay; it researches public market data, builds a comparison cohort and tells you if you're underpaid, at market or above. When the evidence is weak it says so instead of guessing.",
+    how: [
+      "A multi-step research agent: cohort interpreter, evidence scout, source auditor, analyst and verifier",
+      "Live web search via LinkUp; outliers trigger a second verification search",
+      "Convex validates every band before it's shown, and caches results",
+    ],
+    stack: ["React", "Convex", "Hermes agents", "LinkUp", "PostHog", "Razorpay"],
+    links: [
+      { label: "Live", href: "https://am-i-underpaid.in" },
+      { label: "Product Hunt", href: "https://www.producthunt.com/@suyash_pradhan7" },
+      { label: "GitHub", href: gh("am-i-underpaid-app") },
+    ],
+  },
+  {
+    id: "satark",
+    name: "Satark",
+    native: "सतर्क",
+    pitch: "A call-safety assistant I built for my Hindi- and Marathi-speaking parents.",
+    about:
+      "Put a suspicious call on speaker and Satark listens. It transcribes the conversation as it happens and warns before you share an OTP, pay, scan a QR code or install an app, showing the exact phrase that triggered it.",
+    how: [
+      "Near-live transcription in 5.5-second segments with Sarvam Saaras v3",
+      "Fast deterministic rules first; Sarvam-30B judges indirect or mixed-language social engineering",
+      "Installable on a phone; audio is processed in memory and never stored",
+    ],
+    stack: ["Next.js", "Sarvam STT", "Sarvam-30B", "PostHog", "PWA"],
+    links: [{ label: "GitHub", href: gh("satark-app") }],
+  },
+  {
+    id: "kahaani",
+    name: "Kahaani",
+    native: "कहानी",
+    pitch: "Keep a grandparent's stories, in their own voice.",
+    about:
+      "A family member sends one meaningful question; the elder hears it in Hindi, Marathi or English and records an answer. The recording is the memory. Transcripts and translations just make it readable across generations.",
+    how: [
+      "Voice in and out with Sarvam speech-to-text, translation and text-to-speech",
+      "Audio is stored first, then processed in the background, so nothing is lost",
+      "Privacy-first analytics: no names, questions, transcripts or audio ever leave",
+    ],
+    stack: ["Next.js", "Convex", "Sarvam voice", "PostHog"],
+    links: [{ label: "GitHub", href: gh("kahaani-app") }],
+  },
+  {
+    id: "relay",
+    name: "Relay",
+    pitch: "An autonomous agent that repairs an overloaded workday.",
+    about:
+      "Give it a packed day, or import one from Google Calendar, and an agent reshuffles it. The model never edits the schedule directly: it picks one narrow tool at a time, and plain code decides what's allowed and when the day is fixed.",
+    how: [
+      "OpenAI tool calling with Zod-validated arguments and visible retries",
+      "Deterministic tools accept or reject each action; an independent validator ends the run",
+      "Runs can be replayed from recorded tool results without another model call",
+    ],
+    stack: ["Next.js", "OpenAI agents", "Zod", "Drizzle", "PostHog"],
+    links: [{ label: "GitHub", href: gh("relay-an-autonomous-agent") }],
+  },
+];
+
 // Short list on the home page. Each links to its role on /work.
 export const shipped = [
   { name: "AI identity & onboarding", detail: "AiPrise · 50+ customers", href: "/work#aiprise" },
@@ -112,12 +210,13 @@ export const shipped = [
 
 export const now = [
   { k: "Building", v: "An enterprise field platform at CAI Software" },
-  { k: "Exploring", v: "AI engineering: LLM features, agents, retrieval and evals" },
+  { k: "Exploring", v: "AI engineering: voice agents, tool-calling agents and evals" },
   { k: "Based in", v: "Bengaluru, India" },
 ];
 
 export const toolbox: { group: string; items: string[] }[] = [
-  { group: "Product", items: ["React", "TypeScript", "React Native", "Tailwind CSS"] },
-  { group: "Systems", items: ["Node.js", "Python", "GraphQL", "React Query", "Auth0"] },
+  { group: "AI", items: ["OpenAI", "Claude", "Sarvam voice AI", "Tool-calling agents", "Zod schemas"] },
+  { group: "Product", items: ["React", "TypeScript", "Next.js", "React Native", "PostHog"] },
+  { group: "Systems", items: ["Node.js", "Python", "GraphQL", "Convex", "Auth0"] },
   { group: "Shipping", items: ["Jest", "Cypress", "Terraform", "GitHub Actions", "AWS"] },
 ];

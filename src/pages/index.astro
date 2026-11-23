@@ -2,7 +2,8 @@
 import Base from "../layouts/Base.astro";
 import Arrow from "../components/Arrow.astro";
 import CopyEmail from "../components/CopyEmail.astro";
-import { shipped, site } from "../data/site";
+import ProjectCard from "../components/ProjectCard.astro";
+import { projects, shipped, site } from "../data/site";
 ---
 <Base>
   <p class="label in" style="--i:0">{site.role} · Bengaluru</p>
@@ -16,17 +17,25 @@ import { shipped, site } from "../data/site";
   <div class="intro in" style="--i:2">
     <p>
       Eight years shipping fintech, identity and enterprise products, twice as a founding engineer.
-      I've owned the whole surface: web and mobile apps, SDKs, data layers, auth, CI and cloud.
-      Now I'm going deep on AI engineering: LLM features, agents, and the evals that keep them honest.
+      On my own time I build AI products: voice apps with Sarvam, agents with OpenAI and Claude,
+      and PostHog to see what people actually use. One made the top 50 of 13,500 in a hackathon
+      run with OpenAI and Varun Mayya.
     </p>
     <p class="ctas">
-      <a class="link" href="/work">See the work<Arrow dir="right" /></a>
+      <a class="link" href="/projects">See the projects<Arrow dir="right" /></a>
       <a class="link" href="/ask">Ask an AI about me<Arrow dir="right" /></a>
     </p>
   </div>
 
-  <section class="section in" style="--i:3" aria-labelledby="shipped">
-    <h2 id="shipped" class="label">A few things I've shipped</h2>
+  <section class="section in" style="--i:3" aria-labelledby="projects">
+    <h2 id="projects" class="label">Side projects</h2>
+    <div class="cards">
+      {projects.map((p, i) => <ProjectCard project={p} index={i} featured={i === 0} />)}
+    </div>
+  </section>
+
+  <section class="section in" style="--i:4" aria-labelledby="shipped">
+    <h2 id="shipped" class="label">At work <a class="link all" href="/work">All roles<Arrow dir="right" /></a></h2>
     <ul class="list">
       {shipped.map((s, i) => (
         <li>
@@ -41,7 +50,7 @@ import { shipped, site } from "../data/site";
     </ul>
   </section>
 
-  <section class="section in" style="--i:4" aria-labelledby="hello">
+  <section class="section in" style="--i:5" aria-labelledby="hello">
     <h2 id="hello" class="label">Say hello</h2>
     <p class="hello">
       Open to good product problems, AI or otherwise, and the people working on them.
@@ -116,6 +125,19 @@ import { shipped, site } from "../data/site";
   }
   .ctas .link {
     color: var(--ink);
+  }
+
+  .cards {
+    display: grid;
+    gap: 1rem;
+  }
+  h2.label {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .all {
+    color: var(--muted);
   }
 
   .list {

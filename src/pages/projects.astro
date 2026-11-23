@@ -1,0 +1,164 @@
+---
+import Base from "../layouts/Base.astro";
+import Arrow from "../components/Arrow.astro";
+import { projects } from "../data/site";
+---
+<Base title="Projects" description="Side projects by Suyash Pradhan: AI and voice products including Sachet, Am I Underpaid, Satark, Kahaani and Relay.">
+  <p class="label in" style="--i:0">Projects</p>
+  <h1 class="title in" style="--i:1">Things I build <em>after hours</em>.</h1>
+  <p class="lede in" style="--i:2">
+    Mostly AI and voice, mostly for people close to home: my parents, my grandparents, anyone
+    trying to report a fraud or figure out their salary. Each one is small, careful about what
+    the AI is allowed to decide, and shipped.
+  </p>
+
+  <div class="projects">
+    {projects.map((p, i) => (
+      <article id={p.id} class:list={["project", "in", i === 0 && "featured"]} style={`--i:${i + 3}`}>
+        <p class="meta">
+          <span class="num">{String(i + 1).padStart(2, "0")}</span>
+          {p.badge && <span class="badge">{p.badge}</span>}
+        </p>
+        <h2>
+          {p.name}
+          {p.native && <span class="native" lang="hi">{p.native}</span>}
+        </h2>
+        <p class="pitch">{p.pitch}</p>
+        <p class="about">{p.about}</p>
+        <ul class="how">
+          {p.how.map((h) => <li>{h}</li>)}
+        </ul>
+        <ul class="stack" aria-label="Built with">
+          {p.stack.map((t) => <li>{t}</li>)}
+        </ul>
+        <p class="links">
+          {p.links.map((l) => (
+            <a class="link" href={l.href} target="_blank" rel="noopener noreferrer">{l.label}<Arrow /></a>
+          ))}
+        </p>
+      </article>
+    ))}
+  </div>
+</Base>
+
+<style>
+  .title {
+    font-size: clamp(2rem, 6vw, 2.875rem);
+    max-width: 16ch;
+    text-wrap: balance;
+  }
+  .title em {
+    color: var(--accent);
+  }
+  .lede {
+    margin-top: 1.5rem;
+    color: var(--muted);
+    max-width: 34rem;
+  }
+
+  .projects {
+    margin-top: 3rem;
+  }
+  .project {
+    padding-block: 2.25rem;
+    border-top: 1px solid var(--line);
+    scroll-margin-top: 1.5rem;
+  }
+  .project:target h2 {
+    color: var(--accent);
+  }
+  .meta {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem 0.9rem;
+    margin: 0 0 0.75rem;
+    font-size: 0.8125rem;
+    color: var(--muted);
+  }
+  .num {
+    font-variant-numeric: tabular-nums;
+  }
+  .badge {
+    padding: 0.15rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    font-size: 0.75rem;
+  }
+  .featured .badge {
+    color: var(--accent);
+    border-color: color-mix(in srgb, var(--accent) 40%, transparent);
+    background: color-mix(in srgb, var(--accent) 8%, transparent);
+  }
+  h2 {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: baseline;
+    gap: 0 0.6rem;
+    font-size: clamp(1.75rem, 5vw, 2.25rem);
+    font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+    transition: color 0.3s;
+  }
+  .native {
+    font-family: system-ui, sans-serif;
+    font-size: 1rem;
+    color: var(--muted);
+  }
+  .pitch {
+    margin: 0.5rem 0 1rem;
+    font-family: var(--serif);
+    font-size: 1.25rem;
+    line-height: 1.45;
+    font-variation-settings: "SOFT" 100;
+  }
+  .about {
+    color: var(--muted);
+    max-width: 34rem;
+  }
+  .how {
+    margin: 0 0 1.25rem;
+    padding: 0;
+    list-style: none;
+  }
+  .how li {
+    position: relative;
+    padding-left: 1.1rem;
+    margin-bottom: 0.5rem;
+  }
+  .how li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.8em;
+    width: 0.4rem;
+    height: 1px;
+    background: var(--accent);
+  }
+  .stack {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+    margin: 0 0 1.25rem;
+    padding: 0;
+    list-style: none;
+  }
+  .stack li {
+    font-size: 0.8125rem;
+    padding: 0.15rem 0.65rem;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    color: var(--muted);
+    transition: border-color 0.25s, color 0.25s;
+  }
+  @media (hover: hover) {
+    .project:hover .stack li {
+      border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
+    }
+  }
+  .links {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.4rem 1.5rem;
+    margin: 0;
+  }
+</style>

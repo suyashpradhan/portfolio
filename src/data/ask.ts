@@ -2,13 +2,16 @@
 // Built from the same data as the rest of the site, so it never drifts.
 // Edit `extra` to teach it more about you (preferences, side projects, etc.).
 
-import { now, roles, site, socials, toolbox } from "./site";
+import { now, projects, roles, site, socials, toolbox } from "./site";
 
 const extra = `
 - Education: B.Sc., Mumbai University (2014–2017).
 - Core strengths from the résumé: React, TypeScript/JavaScript, Node.js, Python, React Native, GraphQL, React Query, web SDKs, frontend architecture, offline-first systems, authentication (Auth0), testing (Jest, Cypress), CI/CD, Terraform, GitHub Actions, AWS Amplify, product engineering, technical design, AI-enabled product workflows.
 - Twice a founding frontend engineer (Bureau, AiPrise), taking products from zero to production and paying customers.
-- Direction: moving from "frontend engineer" towards being a complete product engineer and AI engineer. Currently going deep on AI engineering: LLM features, agents, retrieval and evals.
+- Direction: moving from "frontend engineer" towards being a complete product engineer and AI engineer. Currently going deep on AI engineering: voice agents, tool-calling agents and evals.
+- Hands-on AI experience: voice agents with Sarvam (speech-to-text, translation, text-to-speech, Sarvam-30B), the OpenAI API (Responses API, tool calling), Claude, and PostHog for product analytics.
+- Sachet was selected in the top 50 out of 13,500 submissions in a hackathon run with OpenAI and Varun Mayya.
+- Am I Underpaid is live at am-i-underpaid.in, was launched on Product Hunt, and has a few hundred users.
 `.trim();
 
 function knowledge() {
@@ -18,6 +21,12 @@ function knowledge() {
         `## ${r.company}${r.note ? ` (${r.note})` : ""}: ${r.role}${r.place ? `, ${r.place}` : ""}, ${r.from}–${r.to}\n${r.summary}\n${r.points.map((p) => `- ${p}`).join("\n")}`,
     )
     .join("\n\n");
+  const side = projects
+    .map(
+      (p) =>
+        `## ${p.name}${p.badge ? ` (${p.badge})` : ""}\n${p.pitch} ${p.about}\n${p.how.map((h) => `- ${h}`).join("\n")}\nBuilt with: ${p.stack.join(", ")}\nLinks: ${p.links.map((l) => `${l.label} ${l.href}`).join(", ")}`,
+    )
+    .join("\n\n");
   const nowLines = now.map((n) => `- ${n.k}: ${n.v}`).join("\n");
   const tools = toolbox.map((g) => `- ${g.group}: ${g.items.join(", ")}`).join("\n");
   const links = [...socials.map((s) => `- ${s.label}: ${s.href}`), `- Email: ${site.email}`, `- Résumé PDF: ${site.resume}`].join("\n");
@@ -25,6 +34,9 @@ function knowledge() {
   return `# ${site.name}, ${site.role}, ${site.location}
 
 ${site.description}
+
+# Side projects (his highlights)
+${side}
 
 # Experience
 ${work}

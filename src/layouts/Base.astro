@@ -19,9 +19,9 @@ const canonical = new URL(Astro.url.pathname, Astro.site);
 const ogImage = new URL("/og.png", Astro.site);
 
 const nav = [
+  { href: "/projects", label: "Projects" },
   { href: "/work", label: "Work" },
   { href: "/about", label: "About" },
-  { href: "/ask", label: "Ask" },
 ];
 const year = new Date().getFullYear();
 
@@ -244,6 +244,13 @@ const pageOut = {
   @media (max-width: 419px) {
     .mark .last {
       display: none;
+    }
+    nav {
+      gap: 0.6rem;
+      font-size: 0.875rem;
+    }
+    .mark {
+      gap: 0.45rem;
     }
   }
   @media (max-width: 339px) {
