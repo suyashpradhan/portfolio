@@ -25,5 +25,12 @@
         }
       ]
     }
+  ],
+  "redirects": [
+    {
+      "source": "/ask",
+      "destination": "/",
+      "permanent": true
+    }
   ]
 }

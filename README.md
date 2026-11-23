@@ -24,5 +24,3 @@ Built with Astro. Content lives in `src/data/site.ts`.
 npm install
 npm run dev
 ```
-
-The "Ask about me" chat needs an `ANTHROPIC_API_KEY` environment variable in Vercel.
